@@ -1,0 +1,15 @@
+@import "designs.scss";
+// Import all the mixins for this theme
+@import "dashboard";
+
+.dashboard {
+  // Output the actual theme selectors
+  @include dashboard;
+  
+    .mipa {
+          background-color: #dfdfdf;
+        }
+}
+  .mipa {
+          background-color: #dfdfdf;
+        }

@@ -1,0 +1,6 @@
+-  hacer las relaciones lazy.. e iniciarlizarlas como lo hice en el proyecto de informes 
+- hacer las cuentas corrientes y el manejador de cuentas corrientes
+
+
+- documentos , fotos y alguna cosa mas 
+- agregar costos - agregar gastsos bla bla

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+
+	<session-factory>
+
+		<property name="hibernate.hbm2ddl.auto">update</property>
+
+		<!-- Database connection settings. -->
+		<property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="hibernate.connection.url">jdbc:mysql://localhost/SantosDumont?autoReconnect=true&amp;useUnicode=true&amp;createDatabaseIfNotExist=true&amp;characterEncoding=utf-8</property>
+		<property name="hibernate.connection.username">root</property>
+		<property name="hibernate.connection.password"></property>
+		<property name="hibernate.connection.autocommit">false</property>
+
+		<!-- SQL dialect -->
+		<property name="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
+		<property name="hibernate.connection.CharSet">utf8</property>
+		<property name="hibernate.connection.characterEncoding">utf8</property>
+		<property name="hibernate.connection.useUnicode">true</property>
+		<!-- Scope of current session. -->
+		<property name="hibernate.current_session_context_class">thread</property>
+
+		<!-- Connections pool provider. -->
+		<property name="hibernate.connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
+		<property name="hibernate.c3p0.min_size">5</property>
+		<property name="hibernate.c3p0.max_size">20</property>
+		<property name="hibernate.c3p0.timeout">1800</property>
+		<property name="hibernate.c3p0.max_statements">50</property>
+		<property name="hibernate.c3p0.idle_test_period">0</property>
+
+		<!-- Second-level cache. -->
+		<property name="hibernate.cache.use_second_level_cache">false</property>
+		<property name="hibernate.cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+
+		<!-- SQL statement writing. -->
+		<property name="hibernate.show_sql">true</property>
+		<property name="hibernate.format_sql">true</property>
+		<property name="hibernate.use_sql_comments">false</property>
+		<property name="hibernate.generate_statistics">false</property>
+
+		<!-- Mappings -->
+
+		<!-- Accounting -->
+		<mapping
+		class="uy.com.innobit.rem.persistence.datamodel.accounting.CurrentAccount"  />
+		<mapping
+		class="uy.com.innobit.rem.persistence.datamodel.accounting.Transaction" />
+
+		<!-- clients -->
+		<mapping class="uy.com.innobit.rem.persistence.datamodel.clients.Individual" />
+		<mapping class="uy.com.innobit.rem.persistence.datamodel.clients.Occupant" />
+		<mapping class="uy.com.innobit.rem.persistence.datamodel.clients.Owner" />
+
+		<!-- Contract -->
+		<mapping class="uy.com.innobit.rem.persistence.datamodel.contract.ContractCharge" />
+		<mapping class="uy.com.innobit.rem.persistence.datamodel.contract.Contract" />
+		<mapping
+		class="uy.com.innobit.rem.persistence.datamodel.contract.ContractDocument" />
+		<mapping
+		class="uy.com.innobit.rem.persistence.datamodel.contract.ContractEntry" />
+		<mapping
+		class="uy.com.innobit.rem.persistence.datamodel.contract.ContractExpense" />
+		<mapping
+		class="uy.com.innobit.rem.persistence.datamodel.contract.ContractNotification" />
+		<mapping
+		class="uy.com.innobit.rem.persistence.datamodel.contract.ContractPayment" />
+		<mapping
+		class="uy.com.innobit.rem.persistence.datamodel.contract.ContractCharge" />
+
+		<!-- Property -->
+		<mapping class="uy.com.innobit.rem.persistence.datamodel.property.Property" />
+		<mapping
+		class="uy.com.innobit.rem.persistence.datamodel.property.PropertyDocument" />
+		<mapping
+		class="uy.com.innobit.rem.persistence.datamodel.property.PropertyNotification" />
+		<mapping
+		class="uy.com.innobit.rem.persistence.datamodel.property.PropertyPicture" />
+		<mapping
+		class="uy.com.innobit.rem.persistence.datamodel.property.inventory.Inventory" />
+		<mapping
+		class="uy.com.innobit.rem.persistence.datamodel.property.inventory.InventoryItem" />
+
+		<!-- User -->
+		<mapping class="uy.com.innobit.rem.persistence.datamodel.user.User" />
+
+	</session-factory>
+
+</hibernate-configuration>
