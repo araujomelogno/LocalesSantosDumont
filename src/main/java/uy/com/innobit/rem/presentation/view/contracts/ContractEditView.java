@@ -310,8 +310,7 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 		});
 		upload.setButtonCaption("Frente cheque");
 		upload.setImmediate(true);
-		HorizontalLayout hl = new HorizontalLayout(commission, upload, add);
-		hl.setComponentAlignment(upload, Alignment.TOP_CENTER);
+		HorizontalLayout hl = new HorizontalLayout(add);
 		hl.setSpacing(true);
 
 		final DateField date = new DateField("Fecha:");
@@ -331,7 +330,7 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 
 		final MTextField bank = new MTextField("Banco:");
 		final DateField checkDate = new DateField("Fecha cheque:");
-		GridLayout grid = new GridLayout(4, 2);
+		GridLayout grid = new GridLayout(5, 2);
 		grid.setWidth("100%");
 		grid.setStyleName(ValoTheme.PANEL_WELL);
 		grid.setSpacing(true);
@@ -339,10 +338,12 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 		grid.addComponent(amount, 1, 0);
 		grid.addComponent(currency, 2, 0);
 		grid.addComponent(type, 3, 0);
+		grid.addComponent(commission, 4, 0);
 		grid.addComponent(bank, 0, 1);
 		grid.addComponent(checkDate, 1, 1);
 		grid.addComponent(checkNumber, 2, 1);
 		grid.addComponent(source, 3, 1);
+		grid.addComponent(upload, 4, 1);
 		grid.setWidth("100%");
 		grid.setStyleName("mipa");
 		VerticalLayout layout = new VerticalLayout(grid, hl, charges);
