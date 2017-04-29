@@ -1,5 +1,10 @@
 package uy.com.innobit.rem.presentation.view.contracts;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -27,6 +32,7 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.StreamResource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -44,8 +50,10 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.ColumnGenerator;
+import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.TableFieldFactory;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.Upload;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
@@ -88,7 +96,7 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 
 	private Window paymentsWindow;
 	private Window chargesWindow;
-
+	private byte[] uploadData;
 	// private void layout() {
 	// addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 	// obs.setInputPrompt("Observaciones");
@@ -269,8 +277,41 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 		source.addItem("Inquilino");
 		source.addItem("Propietario");
 		source.select("Inquilino");
+		CheckBox commission = new CheckBox(":Comisión");
 
-		HorizontalLayout hl = new HorizontalLayout(add);
+		Upload upload = new Upload("", new Receiver() {
+			@Override
+			public OutputStream receiveUpload(final String filename, String mimeType) {
+				return new ByteArrayOutputStream() {
+					@Override
+					public void close() throws IOException {
+						if (filename.contains("pdf") || filename.contains("jpg") || filename.contains("jpeg")
+								|| filename.contains("png")) {
+							uploadData = toByteArray();
+
+							StreamResource resource = new StreamResource(new StreamResource.StreamSource() {
+								private static final long serialVersionUID = 1L;
+
+								@Override
+								public InputStream getStream() {
+									return new ByteArrayInputStream(uploadData);
+								}
+							}, "");
+
+							resource.setCacheTime(0);
+							resource.setFilename(resource.getFilename() + "1");
+
+						} else {
+							Notification.show("Tipo de imagen no soportada");
+						}
+					}
+				};
+			}
+		});
+		upload.setButtonCaption("Frente cheque");
+		upload.setImmediate(true);
+		HorizontalLayout hl = new HorizontalLayout(commission, upload, add);
+		hl.setComponentAlignment(upload, Alignment.TOP_CENTER);
 		hl.setSpacing(true);
 
 		final DateField date = new DateField("Fecha:");
@@ -287,6 +328,7 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 		currency.select("$");
 
 		final MTextField checkNumber = new MTextField("No. cheque:");
+
 		final MTextField bank = new MTextField("Banco:");
 		final DateField checkDate = new DateField("Fecha cheque:");
 		GridLayout grid = new GridLayout(4, 2);
