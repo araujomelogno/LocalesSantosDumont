@@ -39,4 +39,6 @@
     <inherits name="org.tepi.filtertable.gwt.FilterTableWidgetset" />
 
     <inherits name="org.vaadin.addon.leaflet.Widgetset" />
+
+    <inherits name="org.vaadin.simplefiledownloader.SimplefiledownloaderWidgetset" />
 </module>

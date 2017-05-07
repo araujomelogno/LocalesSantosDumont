@@ -1,6 +1,5 @@
 package uy.com.innobit.rem.persistence.datamodel.contract;
 
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -8,8 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
 import uy.com.innobit.rem.persistence.datamodel.Bean;
@@ -24,7 +21,7 @@ public class ContractPayment extends Bean {
 
 	private Date paymentDate;
 	private String type;
-	private BigDecimal amount;
+	private Double amount;
 	private Boolean check;
 	private Date checkDate;
 	private String checkNumber;
@@ -58,11 +55,11 @@ public class ContractPayment extends Bean {
 		this.type = type;
 	}
 
-	public BigDecimal getAmount() {
+	public Double getAmount() {
 		return amount;
 	}
 
-	public void setAmount(BigDecimal amount) {
+	public void setAmount(Double amount) {
 		this.amount = amount;
 	}
 

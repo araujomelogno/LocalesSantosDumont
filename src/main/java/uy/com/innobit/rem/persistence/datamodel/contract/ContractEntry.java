@@ -1,6 +1,5 @@
 package uy.com.innobit.rem.persistence.datamodel.contract;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,22 +26,20 @@ public class ContractEntry extends Bean {
 	private Integer id;
 
 	private Integer yearIndex;
-	private BigDecimal amount;
-	private BigDecimal ownerComission;
-	private BigDecimal clientComission;
-	private BigDecimal ownerComissionCharged;
-	private BigDecimal clientComissionCharged;
-	private BigDecimal rentalCharged;
-	private BigDecimal rentalPaid;
+	private Double amount = new Double(0);
+	private Double ownerComission = new Double(0);;
+	private Double clientComission = new Double(0);;
+	private Double ownerComissionCharged = new Double(0);;
+	private Double clientComissionCharged = new Double(0);;
+	private Double rentalCharged = new Double(0);;
+	private Double rentalPaid = new Double(0);;
 	private boolean active;
 	private Date init;
 	private Date end;
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "contract_entry_id")
-	@Fetch(FetchMode.SELECT)
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private Set<ContractCharge> contractCharges = new HashSet<ContractCharge>();
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinColumn(name = "contract_entry_id")
 	@Fetch(FetchMode.SELECT)
 	private Set<ContractPayment> payments = new HashSet<ContractPayment>();
@@ -63,59 +60,59 @@ public class ContractEntry extends Bean {
 		this.yearIndex = yearIndex;
 	}
 
-	public BigDecimal getAmount() {
+	public Double getAmount() {
 		return amount;
 	}
 
-	public void setAmount(BigDecimal amount) {
+	public void setAmount(Double amount) {
 		this.amount = amount;
 	}
 
-	public BigDecimal getOwnerComission() {
+	public Double getOwnerComission() {
 		return ownerComission;
 	}
 
-	public void setOwnerComission(BigDecimal ownerComission) {
+	public void setOwnerComission(Double ownerComission) {
 		this.ownerComission = ownerComission;
 	}
 
-	public BigDecimal getClientComission() {
+	public Double getClientComission() {
 		return clientComission;
 	}
 
-	public void setClientComission(BigDecimal clientComission) {
+	public void setClientComission(Double clientComission) {
 		this.clientComission = clientComission;
 	}
 
-	public BigDecimal getOwnerComissionCharged() {
+	public Double getOwnerComissionCharged() {
 		return ownerComissionCharged;
 	}
 
-	public void setOwnerComissionCharged(BigDecimal ownerComissionCharged) {
+	public void setOwnerComissionCharged(Double ownerComissionCharged) {
 		this.ownerComissionCharged = ownerComissionCharged;
 	}
 
-	public BigDecimal getClientComissionCharged() {
+	public Double getClientComissionCharged() {
 		return clientComissionCharged;
 	}
 
-	public void setClientComissionCharged(BigDecimal clientComissionCharged) {
+	public void setClientComissionCharged(Double clientComissionCharged) {
 		this.clientComissionCharged = clientComissionCharged;
 	}
 
-	public BigDecimal getRentalCharged() {
+	public Double getRentalCharged() {
 		return rentalCharged;
 	}
 
-	public void setRentalCharged(BigDecimal rentalCharged) {
+	public void setRentalCharged(Double rentalCharged) {
 		this.rentalCharged = rentalCharged;
 	}
 
-	public BigDecimal getRentalPaid() {
+	public Double getRentalPaid() {
 		return rentalPaid;
 	}
 
-	public void setRentalPaid(BigDecimal rentalPaid) {
+	public void setRentalPaid(Double rentalPaid) {
 		this.rentalPaid = rentalPaid;
 	}
 

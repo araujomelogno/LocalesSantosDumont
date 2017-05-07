@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.tepi.filtertable.FilterTable;
+import org.vaadin.simplefiledownloader.SimpleFileDownloader;
 import org.vaadin.viritin.button.DeleteButton;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.button.PrimaryButton;
@@ -21,18 +22,16 @@ import org.vaadin.viritin.layouts.MFormLayout;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
-import com.vaadin.addon.charts.themes.VaadinTheme;
-import com.vaadin.addon.charts.themes.ValoDarkTheme;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.StreamResource;
+import com.vaadin.server.StreamResource.StreamSource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -50,14 +49,15 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.ColumnGenerator;
-import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.TableFieldFactory;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload;
+import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
+import uy.com.innobit.rem.business.managers.ContractManager;
 import uy.com.innobit.rem.business.managers.OccupantManager;
 import uy.com.innobit.rem.persistence.datamodel.clients.Occupant;
 import uy.com.innobit.rem.persistence.datamodel.contract.Contract;
@@ -65,7 +65,6 @@ import uy.com.innobit.rem.persistence.datamodel.contract.ContractCharge;
 import uy.com.innobit.rem.persistence.datamodel.contract.ContractCharge;
 import uy.com.innobit.rem.persistence.datamodel.contract.ContractEntry;
 import uy.com.innobit.rem.persistence.datamodel.contract.ContractPayment;
-import uy.com.innobit.rem.persistence.datamodel.property.Property;
 import uy.com.innobit.rem.presentation.RemUI;
 import uy.com.innobit.rem.presentation.view.DashboardViewType;
 import uy.com.innobit.rem.presentation.view.owners.OwnerFilterGenerator;
@@ -90,6 +89,7 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 	Table contractEntries;
 	ContractEntry entry;
 	PropertyForm propertyForm;
+	private SimpleFileDownloader downloader = new SimpleFileDownloader();
 
 	private Window occupantList;
 	private FilterTable occupantsTable;
@@ -97,6 +97,7 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 	private Window paymentsWindow;
 	private Window chargesWindow;
 	private byte[] uploadData;
+	private String uploadDataName;
 	// private void layout() {
 	// addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 	// obs.setInputPrompt("Observaciones");
@@ -277,9 +278,29 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 		source.addItem("Inquilino");
 		source.addItem("Propietario");
 		source.select("Inquilino");
-		CheckBox commission = new CheckBox(":Comisión");
+		source.setEnabled(false);
+		final ComboBox commission = new ComboBox("Comisión:");
+		commission.addItem("Si");
+		commission.addItem("No");
+		commission.select("No");
+		;
+		commission.addValueChangeListener(new ValueChangeListener() {
 
-		Upload upload = new Upload("", new Receiver() {
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				if (commission.getValue().toString().equalsIgnoreCase("No")) {
+					source.select("Inquilino");
+					source.setEnabled(false);
+
+				} else {
+					source.setEnabled(true);
+
+				}
+
+			}
+		});
+
+		final Upload upload = new Upload("", new Receiver() {
 			@Override
 			public OutputStream receiveUpload(final String filename, String mimeType) {
 				return new ByteArrayOutputStream() {
@@ -288,19 +309,7 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 						if (filename.contains("pdf") || filename.contains("jpg") || filename.contains("jpeg")
 								|| filename.contains("png")) {
 							uploadData = toByteArray();
-
-							StreamResource resource = new StreamResource(new StreamResource.StreamSource() {
-								private static final long serialVersionUID = 1L;
-
-								@Override
-								public InputStream getStream() {
-									return new ByteArrayInputStream(uploadData);
-								}
-							}, "");
-
-							resource.setCacheTime(0);
-							resource.setFilename(resource.getFilename() + "1");
-
+							uploadDataName = filename;
 						} else {
 							Notification.show("Tipo de imagen no soportada");
 						}
@@ -314,6 +323,7 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 		hl.setSpacing(true);
 
 		final DateField date = new DateField("Fecha:");
+		date.setValue(new Date());
 		final MTextField amount = new MTextField("Monto:");
 		amount.setConverter(Integer.class);
 		final ComboBox type = new ComboBox("Tipo:");
@@ -327,9 +337,34 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 		currency.select("$");
 
 		final MTextField checkNumber = new MTextField("No. cheque:");
-
 		final MTextField bank = new MTextField("Banco:");
 		final DateField checkDate = new DateField("Fecha cheque:");
+
+		checkNumber.setEnabled(false);
+		checkDate.setEnabled(false);
+		bank.setEnabled(false);
+		upload.setEnabled(false);
+
+		type.addValueChangeListener(new ValueChangeListener() {
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				if (type.getValue().toString().equalsIgnoreCase("efectivo")) {
+					checkNumber.setEnabled(false);
+					checkDate.setEnabled(false);
+					bank.setEnabled(false);
+					upload.setEnabled(false);
+
+				} else {
+					checkNumber.setEnabled(true);
+					checkDate.setEnabled(true);
+					bank.setEnabled(true);
+					upload.setEnabled(true);
+				}
+
+			}
+		});
+
 		GridLayout grid = new GridLayout(5, 2);
 		grid.setWidth("100%");
 		grid.setStyleName(ValoTheme.PANEL_WELL);
@@ -337,33 +372,21 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 		grid.addComponent(date, 0, 0);
 		grid.addComponent(amount, 1, 0);
 		grid.addComponent(currency, 2, 0);
-		grid.addComponent(type, 3, 0);
-		grid.addComponent(commission, 4, 0);
-		grid.addComponent(bank, 0, 1);
-		grid.addComponent(checkDate, 1, 1);
-		grid.addComponent(checkNumber, 2, 1);
-		grid.addComponent(source, 3, 1);
+		grid.addComponent(commission, 3, 0);
+		grid.addComponent(source, 4, 0);
+		grid.addComponent(type, 0, 1);
+		grid.addComponent(bank, 1, 1);
+		grid.addComponent(checkDate, 2, 1);
+		grid.addComponent(checkNumber, 3, 1);
 		grid.addComponent(upload, 4, 1);
+
 		grid.setWidth("100%");
 		grid.setStyleName("mipa");
 		VerticalLayout layout = new VerticalLayout(grid, hl, charges);
 		layout.setWidth("100%");
 		layout.setSpacing(true);
 		layout.setMargin(true);
-		type.addValueChangeListener(new ValueChangeListener() {
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				if (event.getProperty().getValue().toString().equalsIgnoreCase("Efectivo")) {
-					checkDate.setEnabled(false);
-					checkNumber.setEnabled(false);
-					bank.setEnabled(false);
-				} else {
-					checkDate.setEnabled(true);
-					checkNumber.setEnabled(true);
-					bank.setEnabled(true);
-				}
-			}
-		});
+
 		add.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
@@ -378,14 +401,62 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 				ContractCharge p = new ContractCharge();
 				p.setSOURCE(source.getValue().toString());
 				p.setPaymentDate(date.getValue());
-				p.setAmount(new BigDecimal(amount.getValue().replace(",", "")));
+				p.setAmount(new Double(amount.getValue().replace(",", "")));
+				p.setCurrency(currency.getValue().toString());
+				p.setCommission(commission.getValue().toString().equalsIgnoreCase("si"));
+				p.setType(type.getValue().toString());
 				if (type.getValue().toString().equalsIgnoreCase("cheque")) {
-					p.setCheck(true);
+					p.setCheckPayment(true);
 					p.setCheckDate(checkDate.getValue());
 					p.setCheckNumber(checkNumber.getValue());
 					p.setBank(bank.getValue());
+					p.setCheckImage(uploadData);
+					p.setCheckName(uploadDataName);
 				}
+				entry.getContractCharges().add(p);
+				if (p.getCommission()) {
+					if (source.getValue().toString().equalsIgnoreCase("propietario")) {
+						entry.setOwnerComissionCharged(entry.getOwnerComissionCharged() + p.getAmount());
+					} else {
+						entry.setClientComissionCharged(entry.getClientComissionCharged() + p.getAmount());
+					}
+				} else {
+					entry.setRentalCharged(entry.getRentalCharged() + p.getAmount());
+				}
+				p.setEntry(entry);
+				ContractManager.getInstance().updateContract(getEntity());
 				charges.getContainerDataSource().addItem(p);
+				date.setValue(new Date());
+				amount.setValue("");
+				currency.setValue("$");
+				type.setValue("Efectivo");
+				commission.setValue("No");
+				bank.setValue("");
+				checkDate.setValue(null);
+				checkNumber.setValue("");
+				source.setValue("Inquilino");
+
+				uploadData = null;
+				uploadDataName = "";
+
+			}
+		});
+		charges.addItemClickListener(new ItemClickListener() {
+
+			@Override
+			public void itemClick(ItemClickEvent event) {
+				ContractCharge charge = (ContractCharge) charges.getValue();
+				date.setValue(charge.getPaymentDate());
+				amount.setValue(charge.getAmount().toString());
+				currency.setValue(charge.getCurrency());
+				type.setValue(charge.getCheckPayment() ? "Cheque" : "Efectivo");
+				commission.setValue(charge.getCommission() ? "Si" : "No");
+				bank.setValue(charge.getBank());
+				checkDate.setValue(charge.getCheckDate());
+				checkNumber.setValue(charge.getCheckNumber());
+				source.setValue(charge.getSOURCE());
+				uploadData = charge.getCheckImage();
+				uploadDataName = charge.getCheckName();
 			}
 		});
 		chargesWindow.setContent(layout);
@@ -395,10 +466,38 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 		BeanItemContainer<ContractCharge> container = new BeanItemContainer<ContractCharge>(ContractCharge.class);
 		final Table table = new Table();
 		table.setContainerDataSource(container);
-		table.setVisibleColumns("paymentDateSDF", "SOURCE", "type", "amount", "checkDateSDF", "checkNumber", "bank");
-		table.setColumnHeaders("Fecha", "Origen", "Tipo", "Monto", "Fecha Ch.", "No.Ch.", "Banco");
+		table.setVisibleColumns("paymentDateSDF", "SOURCE", "type", "currency", "amount", "checkDateSDF", "checkNumber",
+				"bank");
+		table.setColumnHeaders("Fecha", "Origen", "Tipo", "", "Monto", "Fecha Ch.", "No.Ch.", "Banco");
 		table.setPageLength(4);
 		table.setImmediate(true);
+		table.setBuffered(false);
+		table.addGeneratedColumn("url", new ColumnGenerator() {
+
+			@Override
+			public Object generateCell(Table source, Object itemId, Object columnId) {
+				final ContractCharge c = (ContractCharge) itemId;
+				Button button = new Button("Cheque");
+
+				button.addClickListener(new Button.ClickListener() {
+					public void buttonClick(ClickEvent event) {
+						final StreamResource resource = new StreamResource(new StreamSource() {
+							@Override
+							public InputStream getStream() {
+								return new ByteArrayInputStream(uploadData);
+							}
+						}, uploadDataName);
+						downloader.setFileDownloadResource(resource);
+						downloader.download();
+					}
+				});
+				button.setStyleName(ValoTheme.BUTTON_LINK);
+				button.setEnabled(c.getCheckPayment() && c.getCheckImage() != null && c.getCheckImage().length != 0);
+				return button;
+			}
+		});
+		table.setColumnHeader("url", "cheque");
+
 		table.addGeneratedColumn("delete", new ColumnGenerator() {
 
 			@Override
@@ -413,6 +512,16 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 						entry.getContractCharges().remove(c);
 					}
 				});
+				if (c.getCommission()) {
+					if (source.getValue().toString().equalsIgnoreCase("propietario")) {
+						entry.setOwnerComissionCharged(entry.getOwnerComissionCharged() - c.getAmount());
+					} else {
+						entry.setClientComissionCharged(entry.getClientComissionCharged() - c.getAmount());
+					}
+				} else {
+					entry.setRentalCharged(entry.getRentalCharged() - c.getAmount());
+				}
+				ContractManager.getInstance().updateContract(getEntity());
 				return button;
 			}
 		});
@@ -663,12 +772,34 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 			public void valueChange(ValueChangeEvent event) {
 				Date initDate = init.getValue();
 				Date endDate = end.getValue();
-				int years = endDate.getYear() - initDate.getYear();
-				for (int i = 0; i < years; i++) {
-					ContractEntry entry = new ContractEntry();
-					entry.setYearIndex(i + 1);
-					getEntity().getEntries().add(entry);
-					contractEntries.getContainerDataSource().addItem(entry);
+				if (initDate != null && endDate != null) {
+					int years = endDate.getYear() - initDate.getYear();
+					if (years > getEntity().getEntries().size())
+						for (int i = 0; i < years; i++) {
+							ContractEntry entry = new ContractEntry();
+							entry.setYearIndex(i + 1);
+							getEntity().getEntries().add(entry);
+							contractEntries.getContainerDataSource().addItem(entry);
+						}
+				}
+
+			}
+		});
+
+		init.addValueChangeListener(new ValueChangeListener() {
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				Date initDate = init.getValue();
+				Date endDate = end.getValue();
+				if (initDate != null && endDate != null) {
+					int years = endDate.getYear() - initDate.getYear();
+					if (years > getEntity().getEntries().size())
+						for (int i = 0; i < years; i++) {
+							ContractEntry entry = new ContractEntry();
+							entry.setYearIndex(i + 1);
+							getEntity().getEntries().add(entry);
+							contractEntries.getContainerDataSource().addItem(entry);
+						}
 				}
 
 			}
@@ -691,6 +822,11 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 		layout.expand(panel);
 		return layout;
 	}
+
+	// @Override
+	// protected void lazyInit() {
+	//
+	// }
 
 	void init() {
 		setEagerValidation(true);

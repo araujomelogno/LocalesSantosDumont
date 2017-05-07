@@ -317,7 +317,7 @@ public class ContractEditView2 extends MVerticalLayout implements View {
 				p.setPaymentDate(date.getValue());
 				p.setAmount(new BigDecimal(amount.getValue().replace(",", "")));
 				if (type.getValue().toString().equalsIgnoreCase("cheque")) {
-					p.setCheck(true);
+					p.setCheckPayment(true);
 					p.setCheckDate(checkDate.getValue());
 					p.setCheckNumber(checkNumber.getValue());
 					p.setBank(bank.getValue());

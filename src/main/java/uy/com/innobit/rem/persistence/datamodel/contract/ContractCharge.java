@@ -1,6 +1,5 @@
 package uy.com.innobit.rem.persistence.datamodel.contract;
 
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -10,7 +9,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
 import uy.com.innobit.rem.persistence.datamodel.Bean;
@@ -20,27 +21,31 @@ public class ContractCharge extends Bean {
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;
+	private Integer id = 0;
 
 	private Date paymentDate;
 	private String type;
 
-	private BigDecimal amount;
+	private Double amount;
 	private String currency;
-	private Boolean check;
+	private Boolean checkPayment = false;
 	private Date checkDate;
 	private String checkNumber;
 	private String bank;
-	private Boolean commission;
+	private Boolean commission = false;
 
 	@Lob
 	@Basic(fetch = FetchType.EAGER)
 	private byte[] checkImage;
-
+	private String checkName;
 	@Transient
 	private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	@Transient
 	private String SOURCE;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "contract_entry_id", nullable = false)
+	private ContractEntry entry;
 
 	public ContractCharge() {
 
@@ -100,20 +105,12 @@ public class ContractCharge extends Bean {
 		this.type = type;
 	}
 
-	public BigDecimal getAmount() {
+	public Double getAmount() {
 		return amount;
 	}
 
-	public void setAmount(BigDecimal amount) {
+	public void setAmount(Double amount) {
 		this.amount = amount;
-	}
-
-	public Boolean getCheck() {
-		return check;
-	}
-
-	public void setCheck(Boolean check) {
-		this.check = check;
 	}
 
 	public Date getCheckDate() {
@@ -179,4 +176,29 @@ public class ContractCharge extends Bean {
 	public void setCurrency(String currency) {
 		this.currency = currency;
 	}
+
+	public String getCheckName() {
+		return checkName;
+	}
+
+	public void setCheckName(String checkName) {
+		this.checkName = checkName;
+	}
+
+	public ContractEntry getEntry() {
+		return entry;
+	}
+
+	public void setEntry(ContractEntry entry) {
+		this.entry = entry;
+	}
+
+	public Boolean getCheckPayment() {
+		return checkPayment;
+	}
+
+	public void setCheckPayment(Boolean check) {
+		this.checkPayment = check;
+	}
+
 }
