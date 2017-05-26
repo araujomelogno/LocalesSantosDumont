@@ -1,19 +1,23 @@
 package uy.com.innobit.rem.persistence.datamodel.property;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import uy.com.innobit.rem.persistence.datamodel.Bean;
+import uy.com.innobit.rem.persistence.datamodel.clients.Owner;
 import uy.com.innobit.rem.persistence.datamodel.notifications.Notification;
 
 @Entity(name = "property_notification")
@@ -21,30 +25,25 @@ public class PropertyNotification extends Bean implements Notification {
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;
+	private Integer id = 0;
 	private Date notificationDate;
 	private String message;
-	private String name;
 	private boolean resolved;
 	private boolean sent;
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "property_id", nullable = false)
-	private Property property;
 
-	// @ElementCollection
-	// @CollectionTable(name = "property_notification_recipient", joinColumns =
-	// @JoinColumn(name = "property_id") )
-	// @Column(name = "recipient")
+	private String logoUrl;
 
-	// @ElementCollection
-	// @CollectionTable(name = "contract_notification_recipient", joinColumns =
-	// @JoinColumn(name = "contract_id") )
-	// @Column(name = "recipient", nullable = false)
-	@org.hibernate.annotations.CollectionOfElements(targetElement = java.lang.String.class)
+	@org.hibernate.annotations.CollectionOfElements(targetElement = java.lang.String.class,fetch = FetchType.EAGER)
 	@JoinTable(name = "property_notification_recipient", joinColumns = @JoinColumn(name = "notification_id") )
-//	@org.hibernate.annotations.IndexColumn(name = "POSITION", base = 1)
 	@Column(name = "recipient", nullable = false)
 	private List<String> recipients = new ArrayList<String>();
+
+	@ManyToOne(optional = true)
+	@JoinColumn(name = "property_id")
+	private Property property;
+
+	@Transient
+	private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 	public Integer getId() {
 		return id;
@@ -70,28 +69,12 @@ public class PropertyNotification extends Bean implements Notification {
 		this.message = message;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public boolean isResolved() {
 		return resolved;
 	}
 
 	public void setResolved(boolean resolved) {
 		this.resolved = resolved;
-	}
-
-	public Property getProperty() {
-		return property;
-	}
-
-	public void setProperty(Property property) {
-		this.property = property;
 	}
 
 	public boolean isSent() {
@@ -110,7 +93,73 @@ public class PropertyNotification extends Bean implements Notification {
 		this.recipients = recipients;
 	}
 
+	@Override
 	public String getSubject() {
-		return name;
+		return "Recordatorio de Propiedad";
 	}
+
+	public String getDateSDF() {
+		if (notificationDate != null)
+			return sdf.format(notificationDate);
+		return "";
+	}
+
+	public String getMessageAux() {
+		if (message != null)
+			if (message.length() > 10)
+				return message.substring(0, 10) + "...";
+			else
+				return message;
+		return "";
+	}
+
+	public String getResolvedAux() {
+		if (resolved)
+			return "Sí";
+		else
+			return "No";
+	}
+
+	public Property getProperty() {
+		return property;
+	}
+
+	public void setProperty(Property property) {
+		this.property = property;
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof PropertyNotification) {
+			PropertyNotification new_name = (PropertyNotification) obj;
+			return id.equals(new_name.getId());
+		}
+		return false;
+	}
+
+	public String getLogoUrl() {
+		return logoUrl;
+	}
+
+	public void setLogoUrl(String logoUrl) {
+		this.logoUrl = logoUrl;
+	}
+
+	public SimpleDateFormat getSdf() {
+		return sdf;
+	}
+
+	public void setSdf(SimpleDateFormat sdf) {
+		this.sdf = sdf;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
 }

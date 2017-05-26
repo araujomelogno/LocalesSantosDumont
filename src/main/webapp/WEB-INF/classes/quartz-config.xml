@@ -11,13 +11,33 @@
 			<name>NotificationJob</name>
 			<group>NotificationGroup</group>
 			<description>Job that triggers the notification engine</description>
-			<job-class>uy.com.innobit.rem.business.notifications.QuartzJob</job-class>
+			<job-class>uy.com.innobit.rem.business.quartz.mail.MailQuartzJob</job-class>
+		</job>
+
+
+
+		<job>
+			<name>MailJob</name>
+			<group>NotificationGroup</group>
+			<description>Job that triggers the notification engine</description>
+			<job-class>uy.com.innobit.rem.business.quartz.reminders.RemindersQuartzJob</job-class>
 		</job>
 
 		<trigger>
 			<cron>
 				<name>NotificationTrigger</name>
 				<job-name>NotificationJob</job-name>
+				<job-group>NotificationGroup</job-group>
+				<!-- It will run every 5 seconds -->
+				<cron-expression>0/30 * * * * ?</cron-expression>
+			</cron>
+		</trigger>
+		
+		
+			<trigger>
+			<cron>
+				<name>MailTrigger</name>
+				<job-name>MailJob</job-name>
 				<job-group>NotificationGroup</job-group>
 				<!-- It will run every 5 seconds -->
 				<cron-expression>0/50 * * * * ?</cron-expression>

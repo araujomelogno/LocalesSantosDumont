@@ -13,14 +13,15 @@ import com.vaadin.addon.charts.model.PlotOptionsPie;
 import uy.com.innobit.rem.persistence.datamodel.dashboardemo.DummyDataGenerator;
 import uy.com.innobit.rem.persistence.datamodel.dashboardemo.Movie;
 import uy.com.innobit.rem.presentation.RemUI;
+import uy.com.innobit.rem.presentation.view.dashboard.DashboardStats;
 
 @SuppressWarnings("serial")
-public class TopSixTheatersChart extends Chart {
+public class PropertiesPieChart extends Chart {
 
-	public TopSixTheatersChart() {
+	public PropertiesPieChart(DashboardStats stats) {
 		super(ChartType.PIE);
 
-		setCaption("Propiedades");
+		setCaption("Locales");
 		getConfiguration().setTitle("");
 		getConfiguration().getChart().setType(ChartType.PIE);
 		getConfiguration().getChart().setAnimation(false);
@@ -30,11 +31,11 @@ public class TopSixTheatersChart extends Chart {
 		DataSeries series = new DataSeries();
 
 		List<Movie> movies = new ArrayList<Movie>(RemUI.getDataProvider().getMovies());
-		DataSeriesItem item = new DataSeriesItem("Libre", 30);
+		DataSeriesItem item = new DataSeriesItem("Libre", stats.getFreeQ());
 		series.add(item);
 		item.setColor(DummyDataGenerator.chartColors[5]);
 
-		item = new DataSeriesItem("Ocupado", 70);
+		item = new DataSeriesItem("Ocupado", stats.getFullQ());
 		series.add(item);
 		item.setColor(DummyDataGenerator.chartColors[1]);
 

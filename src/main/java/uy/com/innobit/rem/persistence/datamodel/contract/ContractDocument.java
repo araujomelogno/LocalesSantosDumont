@@ -15,9 +15,8 @@ public class ContractDocument extends Bean {
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;
+	private Integer id = 0;
 	private String name;
-	private String mimeType;
 	@Lob
 	@Basic(fetch = FetchType.EAGER)
 	private byte[] content;
@@ -38,14 +37,6 @@ public class ContractDocument extends Bean {
 		this.name = name;
 	}
 
-	public String getMimeType() {
-		return mimeType;
-	}
-
-	public void setMimeType(String mimeType) {
-		this.mimeType = mimeType;
-	}
-
 	public byte[] getContent() {
 		return content;
 	}
@@ -53,4 +44,19 @@ public class ContractDocument extends Bean {
 	public void setContent(byte[] content) {
 		this.content = content;
 	}
+
+	@Override
+	public int hashCode() {
+		return id;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof ContractDocument) {
+			ContractDocument new_name = (ContractDocument) obj;
+			return id.equals(new_name.getId());
+		}
+		return false;
+	}
+
 }

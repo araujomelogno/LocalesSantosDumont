@@ -26,6 +26,7 @@ public class Individual extends Bean {
 	private String rut;
 	private String obs;
 	private String socialReason;
+	private String bankAccount;
 
 	public Integer getId() {
 		return id;
@@ -126,5 +127,25 @@ public class Individual extends Bean {
 
 	public void setSocialReason(String socialReason) {
 		this.socialReason = socialReason;
+	}
+
+	@Override
+	public String toString() {
+		String result = "";
+		if (name != null)
+			result = name;
+		if (surname != null)
+			result = result + " " + surname;
+		if (result == "")
+			result = id.toString();
+		return result;
+	}
+
+	public String getBankAccount() {
+		return bankAccount;
+	}
+
+	public void setBankAccount(String bankAccount) {
+		this.bankAccount = bankAccount;
 	}
 }

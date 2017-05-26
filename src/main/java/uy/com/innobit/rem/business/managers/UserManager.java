@@ -21,13 +21,22 @@ public class UserManager {
 			instance = new UserManager();
 		return instance;
 	}
+	public User getBylogin(String login) {
+		List<Criterion> criterias = new ArrayList<Criterion>();
+		criterias.add(Restrictions.eq("login", login));
+		List<User> list = DBEntityManagerFactory.get(User.class).getByCriterion(criterias);
+		if (list == null || list.isEmpty())
+			return null;
+
+		return list.get(0);
+	}
 
 	public synchronized User login(String login, String password) {
 		List<Criterion> criterias = new ArrayList<Criterion>();
 		criterias.add(Restrictions.eq("login", login));
 		criterias.add(Restrictions.eq("password", password));
 		List<User> list = DBEntityManagerFactory.get(User.class).getByCriterion(criterias);
-		if (list == null)
+		if (list == null || list.isEmpty())
 			return null;
 		return list.get(0);
 

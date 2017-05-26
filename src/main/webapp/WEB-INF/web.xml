@@ -7,10 +7,10 @@
 	<context-param>
 		<description>Vaadin production mode</description>
 		<param-name>productionMode</param-name>
-		<param-value>${productionMode}</param-value>
+		<param-value>true</param-value>
 	</context-param>
 	<servlet>
-		<servlet-name>RealEstateManager</servlet-name>
+		<servlet-name>SantosDumont</servlet-name>
 		<servlet-class>uy.com.innobit.rem.presentation.RemServlet</servlet-class>
 		<init-param>
 			<param-name>UI</param-name>
@@ -18,10 +18,15 @@
 		</init-param>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>RealEstateManager</servlet-name>
+		<servlet-name>SantosDumont</servlet-name>
 		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
 	<listener>
 		<listener-class>org.quartz.ee.servlet.QuartzInitializerListener</listener-class>
 	</listener>
+
+
+
+
+
 </web-app>

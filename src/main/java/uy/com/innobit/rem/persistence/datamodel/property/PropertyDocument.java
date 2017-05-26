@@ -15,6 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
 import uy.com.innobit.rem.persistence.datamodel.Bean;
+import uy.com.innobit.rem.persistence.datamodel.contract.ContractDocument;
 
 @Entity(name = "property_document")
 public class PropertyDocument extends Bean {
@@ -78,4 +79,22 @@ public class PropertyDocument extends Bean {
 		else
 			return sdf.format(uploaded);
 	}
+	
+	
+	
+	@Override
+	public int hashCode() {
+		return id;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof PropertyDocument) {
+			PropertyDocument new_name = (PropertyDocument) obj;
+			return id.equals(new_name.getId());
+		}
+		return false;
+	}
+	
+	
 }

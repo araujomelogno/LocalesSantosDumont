@@ -37,7 +37,9 @@ public class OwnerManager {
 		return list.get(0);
 
 	}
-
+	public synchronized Number count() {
+		return DBEntityManagerFactory.get(Owner.class).count();
+	}
 	public synchronized void saveUser(Owner entity) {
 		DBEntityManagerFactory.get(Owner.class).saveEntity(entity);
 	}

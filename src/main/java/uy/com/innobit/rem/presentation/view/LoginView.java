@@ -20,6 +20,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import uy.com.innobit.rem.presentation.event.DashboardEvent.UserLoginRequestedEvent;
+import uy.com.innobit.rem.presentation.RemUI;
 import uy.com.innobit.rem.presentation.event.DashboardEventBus;
 
 @SuppressWarnings("serial")
@@ -91,7 +92,7 @@ public class LoginView extends VerticalLayout {
 		welcome.addStyleName(ValoTheme.LABEL_COLORED);
 		labels.addComponent(welcome);
 
-		Label title = new Label("Real Estate Manager");
+		Label title = new Label("Gestión de Locales");
 		title.setSizeUndefined();
 		title.addStyleName(ValoTheme.LABEL_H3);
 		title.addStyleName(ValoTheme.LABEL_LIGHT);

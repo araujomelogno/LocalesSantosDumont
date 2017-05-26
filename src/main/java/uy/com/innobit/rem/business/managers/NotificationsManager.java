@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.xmlbeans.impl.xb.xsdschema.RestrictionDocument.Restriction;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
@@ -26,7 +27,8 @@ public class NotificationsManager {
 
 	public synchronized List<Notification> getContractNotificationsToSend() {
 		List<Criterion> criterias = new ArrayList<Criterion>();
-		Restrictions.and(Restrictions.ge("notificationDate", new Date()), Restrictions.eq("sent", false));
+		criterias.add(Restrictions.and(Restrictions.eq("resolved", false),
+				Restrictions.and(Restrictions.le("notificationDate", new Date()), Restrictions.eq("sent", false))));
 		List<Notification> result = new ArrayList<Notification>();
 		result.addAll(DBEntityManagerFactory.get(ContractNotification.class).getByCriterion(criterias));
 		return result;
@@ -34,10 +36,55 @@ public class NotificationsManager {
 
 	public synchronized List<Notification> getPropertyNotificationsToSend() {
 		List<Criterion> criterias = new ArrayList<Criterion>();
-		Restrictions.and(Restrictions.ge("notificationDate", new Date()), Restrictions.eq("sent", false));
+		criterias.add(Restrictions.and(Restrictions.eq("resolved", false),
+				Restrictions.and(Restrictions.le("notificationDate", new Date()), Restrictions.eq("sent", false))));
 		List<Notification> result = new ArrayList<Notification>();
 		result.addAll(DBEntityManagerFactory.get(PropertyNotification.class).getByCriterion(criterias));
 		return result;
+	}
+
+	public synchronized List<Notification> getPropertyNotificationsToResolve() {
+		List<Criterion> criterias = new ArrayList<Criterion>();
+		criterias.add(Restrictions.eq("resolved", false));
+		List<Notification> result = new ArrayList<Notification>();
+		result.addAll(DBEntityManagerFactory.get(PropertyNotification.class).getByCriterion(criterias));
+		return result;
+	}
+
+	public synchronized List<Notification> getContractNotificationsToResolve() {
+		List<Criterion> criterias = new ArrayList<Criterion>();
+		criterias.add(Restrictions.eq("resolved", false));
+		List<Notification> result = new ArrayList<Notification>();
+		result.addAll(DBEntityManagerFactory.get(ContractNotification.class).getByCriterion(criterias));
+		return result;
+	}
+
+	public synchronized List<Notification> getPropertyNotificationsToResolveEXPIRED() {
+		Date now = new Date();
+		List<Criterion> criterias = new ArrayList<Criterion>();
+		criterias.add(Restrictions.eq("resolved", false));
+		criterias.add(Restrictions.le("notificationDate", now));
+		List<Notification> result = new ArrayList<Notification>();
+		result.addAll(DBEntityManagerFactory.get(PropertyNotification.class).getByCriterion(criterias));
+		return result;
+	}
+
+	public synchronized List<Notification> getContractNotificationsToResolveEXPIRED() {
+		Date now = new Date();
+		List<Criterion> criterias = new ArrayList<Criterion>();
+		criterias.add(Restrictions.eq("resolved", false));
+		criterias.add(Restrictions.le("notificationDate", now));
+		List<Notification> result = new ArrayList<Notification>();
+		result.addAll(DBEntityManagerFactory.get(ContractNotification.class).getByCriterion(criterias));
+		return result;
+	}
+
+	public synchronized void update(ContractNotification not) {
+		DBEntityManagerFactory.get(ContractNotification.class).updateEntity(not);
+	}
+
+	public synchronized void update(PropertyNotification not) {
+		DBEntityManagerFactory.get(PropertyNotification.class).updateEntity(not);
 	}
 
 }

@@ -3,10 +3,15 @@ package uy.com.innobit.rem.persistence.datamodel.contract;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.persistence.Basic;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
 import uy.com.innobit.rem.persistence.datamodel.Bean;
@@ -16,18 +21,47 @@ public class ContractPayment extends Bean {
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;
- 
+	private Integer id = 0;
 
 	private Date paymentDate;
 	private String type;
+
 	private Double amount;
-	private Boolean check;
+	private String currency;
+	private Double dollarCotization;
+	private Boolean checkPayment = false;
 	private Date checkDate;
 	private String checkNumber;
 	private String bank;
+
+	@Lob
+	@Basic(fetch = FetchType.EAGER)
+	private byte[] checkImage;
+	private String checkName;
 	@Transient
 	private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "contract_entry_id", nullable = true)
+	private ContractEntry entry;
+
+	public ContractPayment() {
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public int hashCode() {
+		return id.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof ContractPayment) {
+			ContractPayment new_name = (ContractPayment) obj;
+			return this.id == (new_name.getId());
+		}
+		return false;
+	}
 
 	public Integer getId() {
 		return id;
@@ -37,10 +71,20 @@ public class ContractPayment extends Bean {
 		this.id = id;
 	}
 
- 
-
 	public Date getPaymentDate() {
 		return paymentDate;
+	}
+
+	public String getPaymentDateSDF() {
+		if (paymentDate != null)
+			return sdf.format(paymentDate);
+		return "";
+	}
+
+	public String getCheckDateSDF() {
+		if (checkDate != null)
+			return sdf.format(checkDate);
+		return "";
 	}
 
 	public void setPaymentDate(Date paymentDate) {
@@ -63,22 +107,8 @@ public class ContractPayment extends Bean {
 		this.amount = amount;
 	}
 
-	public Boolean getCheck() {
-		return check;
-	}
-
-	public void setCheck(Boolean check) {
-		this.check = check;
-	}
-
 	public Date getCheckDate() {
 		return checkDate;
-	}
-
-	public String getCheckDateSDF() {
-		if (checkDate != null)
-			return sdf.format(checkDate);
-		return "";
 	}
 
 	public void setCheckDate(Date checkDate) {
@@ -101,13 +131,64 @@ public class ContractPayment extends Bean {
 		this.bank = bank;
 	}
 
+	public SimpleDateFormat getSdf() {
+		return sdf;
+	}
+
+	public void setSdf(SimpleDateFormat sdf) {
+		this.sdf = sdf;
+	}
+
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
 
-	public String getPaymentDateSDF() {
-		if (paymentDate != null)
-			return sdf.format(paymentDate);
-		return "";
+	public byte[] getCheckImage() {
+		return checkImage;
 	}
+
+	public void setCheckImage(byte[] checkImage) {
+		this.checkImage = checkImage;
+	}
+
+	public String getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
+
+	public String getCheckName() {
+		return checkName;
+	}
+
+	public void setCheckName(String checkName) {
+		this.checkName = checkName;
+	}
+
+	public ContractEntry getEntry() {
+		return entry;
+	}
+
+	public void setEntry(ContractEntry entry) {
+		this.entry = entry;
+	}
+
+	public Boolean getCheckPayment() {
+		return checkPayment;
+	}
+
+	public void setCheckPayment(Boolean check) {
+		this.checkPayment = check;
+	}
+
+	public Double getDollarCotization() {
+		return dollarCotization;
+	}
+
+	public void setDollarCotization(Double dollarCotization) {
+		this.dollarCotization = dollarCotization;
+	}
+
 }

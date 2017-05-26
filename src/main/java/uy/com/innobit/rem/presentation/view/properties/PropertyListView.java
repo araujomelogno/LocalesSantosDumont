@@ -16,6 +16,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -113,7 +114,7 @@ public class PropertyListView extends MVerticalLayout implements View {
 				@Override
 				public Object generateCell(Table table, Object o, Object o2) {
 					Property c = (Property) o;
-					return c.isEmpty() ? "Libre" : "Ocupada";
+					return c.isEmpty() ? "Libre" : "Ocupado";
 				}
 			});
 		}
@@ -264,6 +265,11 @@ public class PropertyListView extends MVerticalLayout implements View {
 		});
 		properties = PropertyManager.getInstance().getAll();
 		propertyTable.setBeans(properties);
+		if (VaadinSession.getCurrent().getAttribute(Property.class) != null) {
+			Property aux = VaadinSession.getCurrent().getAttribute(Property.class);
+			VaadinSession.getCurrent().setAttribute(Property.class, null);
+			editEntity(aux);
+		}
 	}
 
 }

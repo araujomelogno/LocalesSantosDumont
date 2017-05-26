@@ -18,6 +18,11 @@ import uy.com.innobit.rem.presentation.event.DashboardEvent.PostViewChangeEvent;
 import uy.com.innobit.rem.presentation.event.DashboardEventBus;
 import uy.com.innobit.rem.presentation.view.DashboardViewType;
 import uy.com.innobit.rem.presentation.view.contracts.ContractEditView;
+import uy.com.innobit.rem.presentation.view.notifications.NotificationListView;
+import uy.com.innobit.rem.presentation.view.occupants.OccupantListView;
+import uy.com.innobit.rem.presentation.view.owners.OwnerListView;
+import uy.com.innobit.rem.presentation.view.properties.PropertyListView;
+import uy.com.innobit.rem.presentation.view.search.SearchView;
 
 @SuppressWarnings("serial")
 public class RemNavigator extends Navigator {
@@ -39,9 +44,14 @@ public class RemNavigator extends Navigator {
 			initGATracker(TRACKER_ID);
 		}
 		internalViews.put("/contractEdit", ContractEditView.class);
+		internalViews.put("/properties", PropertyListView.class);
+		internalViews.put("/owners", OwnerListView.class);
+		internalViews.put("/occuppants", OccupantListView.class);
+		internalViews.put("/reminders", NotificationListView.class);
+		internalViews.put("/search", SearchView.class);
 		initViewChangeListener();
 		initViewProviders();
- 
+
 	}
 
 	private void initGATracker(final String trackerId) {
@@ -101,7 +111,11 @@ public class RemNavigator extends Navigator {
 							// Non-stateful views get instantiated every time
 							// they're navigated to
 							result = super.getView(viewType.getViewName());
+
 						}
+					}
+					if (result == null) {
+						result =super.getView( DashboardViewType.DASHBOARD.getViewName());
 					}
 					return result;
 				}

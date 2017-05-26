@@ -7,15 +7,29 @@ import org.vaadin.viritin.label.Header;
 import org.vaadin.viritin.layouts.MFormLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import uy.com.innobit.rem.business.managers.OwnerManager;
+import uy.com.innobit.rem.business.managers.PropertyManager;
 import uy.com.innobit.rem.persistence.datamodel.clients.Owner;
+import uy.com.innobit.rem.persistence.datamodel.property.Property;
+import uy.com.innobit.rem.presentation.RemUI;
 
 /**
  * A UI component built to modify Customer entities. The used superclass
@@ -36,13 +50,16 @@ public class OwnerForm extends AbstractForm<Owner> {
 	TextField surname = new MTextField("Apellido:").withFullWidth();
 	TextField doc = new MTextField("Documento:").withFullWidth();
 	TextField rut = new MTextField("Rut:").withFullWidth();
+	TextField bankAccount = new MTextField("Cuenta Bancaria:").withFullWidth();
 	TextField socialReason = new MTextField("Razón Social:").withFullWidth();
 	TextArea address = new MTextArea("Dirección:").withFullWidth();
 	TextField cell = new MTextField("Celular:").withFullWidth();
 	TextField tel = new MTextField("Teléfono:").withFullWidth();
 	TextField mail = new MTextField("Email:").withFullWidth();
 	TextArea obs = new MTextArea("Observaciones:").withFullWidth();
-
+	Button properties = new Button("Propiedades");
+	private Window propertiesWindow;
+	private Table propertiesTable;
 	OwnerListView view;
 
 	public OwnerForm(OwnerListView listView) {
@@ -54,17 +71,65 @@ public class OwnerForm extends AbstractForm<Owner> {
 	@Override
 	protected Component createContent() {
 		setStyleName(ValoTheme.LAYOUT_CARD);
-		MFormLayout form = new MFormLayout(name, surname, doc, rut, socialReason, mail, tel, cell, address, obs)
+		MFormLayout form = new MFormLayout(name, surname, doc, rut,bankAccount, socialReason, mail, tel, cell, address, obs)
 				.withFullWidth();
 		form.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 		Panel panel = new Panel(form);
 		panel.addStyleName(ValoTheme.PANEL_BORDERLESS);
-		MVerticalLayout layout = new MVerticalLayout(new Header("Editar Propietario").setHeaderLevel(4), panel,
-				getToolbar()).withStyleName(ValoTheme.LAYOUT_CARD);
+		HorizontalLayout toolbar = getToolbar();
+		properties.addClickListener(new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				buildPropertiesWindow();
+				RemUI.getCurrent().addWindow(propertiesWindow);
+
+			}
+		});
+		toolbar.addComponent(properties);
+		MVerticalLayout layout = new MVerticalLayout(new Header("Editar Propietario").setHeaderLevel(4), panel, toolbar)
+				.withStyleName(ValoTheme.LAYOUT_CARD);
 		layout.setHeight(view.getHeight(), view.getHeightUnits());
 		setHeight(view.getHeight(), view.getHeightUnits());
 		layout.expand(panel);
 		return layout;
+	}
+
+	public void buildPropertiesWindow() {
+		propertiesWindow = new Window("Propiedades");
+		propertiesWindow.setModal(true);
+		propertiesWindow.setClosable(true);
+		propertiesWindow.setResizable(false);
+		propertiesWindow.setDraggable(false);
+		propertiesWindow.setWidth("65%");
+		MVerticalLayout layout = new MVerticalLayout(buildPropertiesTable()).withFullWidth();
+		propertiesWindow.setContent(layout);
+
+	}
+
+	private Table buildPropertiesTable() {
+		propertiesTable = new Table();
+		propertiesTable.setPageLength(8);
+		propertiesTable.setImmediate(true);
+		propertiesTable.setWidth("100%");
+		BeanItemContainer<Property> cont = new BeanItemContainer<Property>(Property.class);
+		propertiesTable.setContainerDataSource(cont);
+		propertiesTable.setVisibleColumns("name", "padron", "nro", "address");
+		propertiesTable.setColumnHeaders("Nombre", "Padrón", "Número", "Dirección" );
+		propertiesTable.addValueChangeListener(new ValueChangeListener() {
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				Property p = (Property) propertiesTable.getValue();
+				if (p != null) {
+					VaadinSession.getCurrent().setAttribute(Property.class, p);
+					UI.getCurrent().getNavigator().navigateTo("/properties");
+				}
+
+			}
+		});
+		for (Property cd : PropertyManager.getInstance().getByOwner(getEntity()))
+			propertiesTable.getContainerDataSource().addItem(cd);
+
+		return propertiesTable;
 	}
 
 	void init() {

@@ -37,16 +37,12 @@ public class Contract extends Bean {
 	private String warrantyType;
 	private int notdays;
 	private String obs;
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "property_id", nullable = false)
+	@ManyToOne(optional = true)
+	@JoinColumn(name = "property_id", nullable = true)
 	private Property property;
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "occupant_id", nullable = false)
+	@ManyToOne(optional = true)
+	@JoinColumn(name = "occupant_id", nullable = true)
 	private Occupant occupant;
-
-	private BigDecimal totalPayments;
-	private BigDecimal totalPrice;
-	private BigDecimal totalCharges;
 
 	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinColumn(name = "contract_id")
@@ -161,30 +157,6 @@ public class Contract extends Bean {
 		return entries;
 	}
 
-	public BigDecimal getTotalPayments() {
-		return totalPayments;
-	}
-
-	public void setTotalPayments(BigDecimal totalPayments) {
-		this.totalPayments = totalPayments;
-	}
-
-	public BigDecimal getTotalPrice() {
-		return totalPrice;
-	}
-
-	public void setTotalPrice(BigDecimal totalPrice) {
-		this.totalPrice = totalPrice;
-	}
-
-	public BigDecimal getTotalCharges() {
-		return totalCharges;
-	}
-
-	public void setTotalCharges(BigDecimal totalCharges) {
-		this.totalCharges = totalCharges;
-	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Contract) {
@@ -238,8 +210,30 @@ public class Contract extends Bean {
 	}
 
 	public String getOwnerName() {
-		if (property != null)
+		if (property != null && property.getOwner() != null)
 			return property.getOwner().getName();
 		return "";
+	}
+
+	public Double getTotalCharges() {
+		Double result = 0d;
+		for (ContractEntry ce : entries)
+			for (ContractCharge c : ce.getContractCharges())
+				if (c.getCurrency().equalsIgnoreCase("$"))
+					result = result + c.getAmount();
+				else
+					result = result + c.getAmount() * c.getDollarCotization();
+		return result;
+	}
+
+	public Double getTotalPayments() {
+		Double result = 0d;
+		for (ContractEntry ce : entries)
+			for (ContractPayment c : ce.getPayments())
+				if (c.getCurrency().equalsIgnoreCase("$"))
+					result = result + c.getAmount();
+				else
+					result = result + c.getAmount() * c.getDollarCotization();
+		return result;
 	}
 }

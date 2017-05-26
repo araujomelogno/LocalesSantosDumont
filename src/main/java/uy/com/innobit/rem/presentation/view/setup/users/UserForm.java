@@ -72,6 +72,8 @@ public class UserForm extends AbstractForm<User> {
 						UserManager.getInstance().updateUser(entity);
 					view.saveOccupant(entity);
 				} catch (Exception e) {
+					e.printStackTrace();
+					
 					Notification.show("No fue posible guardar los cambios", Notification.Type.ERROR_MESSAGE);
 
 				}

@@ -74,7 +74,7 @@ public class BillingView extends MVerticalLayout implements View {
 		table = new Table();
 		BeanItemContainer<BillingDataValue> cont = new BeanItemContainer<BillingDataValue>(BillingDataValue.class);
 		table.setContainerDataSource(cont);
-		table.setVisibleColumns("init", "end", "propertyName", "amount", "ownerCommission", "occupantComission",
+		table.setVisibleColumns("init", "end", "property", "amount", "ownerCommission", "occupantComission",
 				"ownerComissionCharged", "occupantComissionCharged", "amountPaied");
 		table.setColumnHeader("init", "Desde");
 		table.setColumnHeader("end", "Hasta");

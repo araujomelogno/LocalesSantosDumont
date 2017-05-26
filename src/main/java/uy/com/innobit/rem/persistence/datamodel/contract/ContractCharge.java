@@ -14,6 +14,9 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import uy.com.innobit.rem.persistence.datamodel.Bean;
 
 @Entity(name = "contract_charge")
@@ -28,6 +31,7 @@ public class ContractCharge extends Bean {
 
 	private Double amount;
 	private String currency;
+	private Double dollarCotization;
 	private Boolean checkPayment = false;
 	private Date checkDate;
 	private String checkNumber;
@@ -40,11 +44,12 @@ public class ContractCharge extends Bean {
 	private String checkName;
 	@Transient
 	private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-	@Transient
-	private String SOURCE;
+
+	private String source;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "contract_entry_id", nullable = false)
+	@Fetch(FetchMode.SELECT)
+	@JoinColumn(name = "contract_entry_id", nullable = true)
 	private ContractEntry entry;
 
 	public ContractCharge() {
@@ -60,13 +65,9 @@ public class ContractCharge extends Bean {
 	public boolean equals(Object obj) {
 		if (obj instanceof ContractCharge) {
 			ContractCharge new_name = (ContractCharge) obj;
-			this.id.equals(new_name.getId());
+			return this.id == (new_name.getId());
 		}
 		return false;
-	}
-
-	public String getSOURCE() {
-		return SOURCE;
 	}
 
 	public Integer getId() {
@@ -149,10 +150,6 @@ public class ContractCharge extends Bean {
 		return serialVersionUID;
 	}
 
-	public void setSOURCE(String sOURCE) {
-		SOURCE = sOURCE;
-	}
-
 	public Boolean getCommission() {
 		return commission;
 	}
@@ -197,8 +194,31 @@ public class ContractCharge extends Bean {
 		return checkPayment;
 	}
 
+	public String getcomissionString() {
+		if (commission) {
+			return "Si";
+		}
+		return "No";
+	}
+
 	public void setCheckPayment(Boolean check) {
 		this.checkPayment = check;
+	}
+
+	public Double getDollarCotization() {
+		return dollarCotization;
+	}
+
+	public void setDollarCotization(Double dollarCotization) {
+		this.dollarCotization = dollarCotization;
+	}
+
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
 	}
 
 }

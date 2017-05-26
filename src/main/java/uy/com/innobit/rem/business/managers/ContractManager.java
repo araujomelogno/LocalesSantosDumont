@@ -1,12 +1,22 @@
 package uy.com.innobit.rem.business.managers;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
+import com.vaadin.server.VaadinService;
+
+import uy.com.innobit.rem.persistence.datamodel.clients.Occupant;
 import uy.com.innobit.rem.persistence.datamodel.contract.Contract;
+import uy.com.innobit.rem.persistence.datamodel.contract.ContractCharge;
+import uy.com.innobit.rem.persistence.datamodel.contract.ContractDocument;
+import uy.com.innobit.rem.persistence.datamodel.contract.ContractEntry;
+import uy.com.innobit.rem.persistence.datamodel.contract.ContractExpiration;
+import uy.com.innobit.rem.persistence.datamodel.contract.ContractNotification;
+import uy.com.innobit.rem.persistence.datamodel.contract.ContractPayment;
 import uy.com.innobit.rem.persistence.util.DBEntityManagerFactory;
 
 public class ContractManager {
@@ -36,6 +46,31 @@ public class ContractManager {
 		return list.get(0);
 	}
 
+	public synchronized List<ContractExpiration> getContractActualExpirations(String currency) {
+		List<Criterion> criterias = new ArrayList<Criterion>();
+		Date aux = new Date();
+		Date end = new Date(aux.getYear(), 0, 1, 0, 0, 0);
+		Date init = new Date(aux.getYear(), 0, 1, 0, 0, 0);
+		end.setYear(end.getYear() + 1);
+		criterias.add(Restrictions.eq("currency", currency));
+		criterias.add(Restrictions.lt("expectedDate", end));
+		criterias.add(Restrictions.ge("expectedDate", init));
+		List<ContractExpiration> list = DBEntityManagerFactory.get(ContractExpiration.class).getByCriterion(criterias);
+		return list;
+	}
+
+	public synchronized List<ContractEntry> getContractEntries(Date init, Date end, String currency) {
+		List<Criterion> criterias = new ArrayList<Criterion>();
+		if (init != null)
+			criterias.add(Restrictions.ge("init", init));
+		if (end != null)
+			criterias.add(Restrictions.le("init", end));
+		if (currency != null && !currency.equalsIgnoreCase(""))
+			criterias.add(Restrictions.eq("currency", currency));
+		List<ContractEntry> list = DBEntityManagerFactory.get(ContractEntry.class).getByCriterion(criterias);
+		return list;
+	}
+
 	public synchronized void saveContract(Contract contract) {
 		DBEntityManagerFactory.get(Contract.class).saveEntity(contract);
 	}
@@ -44,7 +79,71 @@ public class ContractManager {
 		DBEntityManagerFactory.get(Contract.class).updateEntity(contract);
 	}
 
+	public void saveContractReminder(ContractNotification p) {
+		p.setLogoUrl((VaadinService.getCurrent().getBaseDirectory().getAbsolutePath() + "/WEB-INF/logo.png"));
+		DBEntityManagerFactory.get(ContractNotification.class).saveEntity(p);
+	}
+
+	public void deleteContractReminder(ContractNotification p) {
+		DBEntityManagerFactory.get(ContractNotification.class).delete(p);
+	}
+
 	public synchronized void deleteContract(Contract contract) {
 		DBEntityManagerFactory.get(Contract.class).delete(contract);
+	}
+
+	public void saveContractCharge(ContractCharge p) {
+		DBEntityManagerFactory.get(ContractCharge.class).saveEntity(p);
+	}
+
+	public void deleteContractCharge(ContractCharge p) {
+		DBEntityManagerFactory.get(ContractCharge.class).delete(p);
+	}
+
+	public void saveContractPayment(ContractPayment p) {
+		DBEntityManagerFactory.get(ContractPayment.class).saveEntity(p);
+	}
+
+	public void delete(ContractExpiration p) {
+		DBEntityManagerFactory.get(ContractExpiration.class).delete(p);
+	}
+
+	public void deleteContractPayment(ContractPayment p) {
+		DBEntityManagerFactory.get(ContractPayment.class).delete(p);
+
+	}
+
+	public void saveContractDocument(ContractDocument p) {
+		DBEntityManagerFactory.get(ContractDocument.class).saveEntity(p);
+	}
+
+	public void deleteContractDocument(ContractDocument p) {
+		DBEntityManagerFactory.get(ContractDocument.class).delete(p);
+	}
+
+	public void save(ContractEntry p) {
+		DBEntityManagerFactory.get(ContractEntry.class).saveEntity(p);
+	}
+
+	public void delete(ContractEntry p) {
+		DBEntityManagerFactory.get(ContractEntry.class).delete(p);
+	}
+
+	public List<Contract> getByOccupant(Occupant occupant) {
+		List<Criterion> criterias = new ArrayList<Criterion>();
+		criterias.add(Restrictions.eq("occupant", occupant));
+		List<Contract> list = DBEntityManagerFactory.get(Contract.class).getByCriterion(criterias);
+		return list;
+	}
+
+	public List<ContractCharge> getActualYearCharges() {
+		List<Criterion> criterias = new ArrayList<Criterion>();
+		Date now = new Date();
+		Date init = new Date(now.getYear(), 0, 1, 0, 0, 0);
+		Date end = new Date(now.getYear() + 1, 0, 1, 0, 0, 0);
+		criterias.add(Restrictions.ge("paymentDate", init));
+		criterias.add(Restrictions.lt("paymentDate", end));
+		List<ContractCharge> list = DBEntityManagerFactory.get(ContractCharge.class).getByCriterion(criterias);
+		return list;
 	}
 }

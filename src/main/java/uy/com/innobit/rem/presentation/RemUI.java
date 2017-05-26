@@ -12,13 +12,16 @@ import com.vaadin.server.Page.BrowserWindowResizeListener;
 import com.vaadin.server.Responsive;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
-import uy.com.innobit.rem.persistence.datamodel.dashboardemo.DashboardUser;
+import uy.com.innobit.rem.business.managers.UserManager;
+import uy.com.innobit.rem.business.util.Encryption;
 import uy.com.innobit.rem.persistence.datamodel.dashboardemo.DataProvider;
 import uy.com.innobit.rem.persistence.datamodel.dashboardemo.DummyDataProvider;
+import uy.com.innobit.rem.persistence.datamodel.user.User;
 import uy.com.innobit.rem.presentation.event.DashboardEvent.BrowserResizeEvent;
 import uy.com.innobit.rem.presentation.event.DashboardEvent.CloseOpenWindowsEvent;
 import uy.com.innobit.rem.presentation.event.DashboardEvent.UserLoggedOutEvent;
@@ -29,11 +32,12 @@ import uy.com.innobit.rem.presentation.view.MainView;
 
 @Theme("dashboard")
 @Widgetset("uy.com.innobit.rem.RealEstateManagerWidgetSet")
-@Title("Real Estate Manager")
+@Title("SantosDumont")
 @SuppressWarnings("serial")
 public final class RemUI extends UI {
 	private final DataProvider dataProvider = new DummyDataProvider();
 	private final DashboardEventBus dashboardEventbus = new DashboardEventBus();
+	private User loggedUser;
 
 	public static RemUI get() {
 		return (RemUI) UI.getCurrent();
@@ -42,11 +46,9 @@ public final class RemUI extends UI {
 	@Override
 	protected void init(final VaadinRequest request) {
 		setLocale(Locale.US);
-
 		DashboardEventBus.register(this);
 		Responsive.makeResponsive(this);
 		addStyleName(ValoTheme.UI_WITH_MENU);
-		updateContent();
 		// Some views need to be aware of browser resize events so a
 		// BrowserResizeEvent gets fired to the event bus on every occasion.
 		Page.getCurrent().addBrowserWindowResizeListener(new BrowserWindowResizeListener() {
@@ -55,20 +57,17 @@ public final class RemUI extends UI {
 				DashboardEventBus.post(new BrowserResizeEvent());
 			}
 		});
-	}
 
-	/**
-	 * Updates the correct content for this UI based on the current user status.
-	 * If the user is logged in with appropriate privileges, main view is shown.
-	 * Otherwise login view is shown.
-	 */
-	private void updateContent() {
-		DashboardUser user = (DashboardUser) VaadinSession.getCurrent().getAttribute(DashboardUser.class.getName());
-		if (user != null && "admin".equals(user.getRole())) {
-			// Authenticated user
-			setContent(new MainView());
-			removeStyleName("loginview");
-			getNavigator().navigateTo(getNavigator().getState());
+		String name = request.getParameter("user");
+		String code = request.getParameter("code");
+		if (name != null && code != null) {
+			loggedUser = UserManager.getInstance().getBylogin(name);
+			if (loggedUser != null && code.trim().equalsIgnoreCase(Encryption.MD5(loggedUser.getPassword()))) {
+				VaadinSession.getCurrent().setAttribute(User.class.getName(), loggedUser);
+				setContent(new MainView());
+				removeStyleName("loginview");
+				getNavigator().navigateTo("Horas");
+			}
 		} else {
 			setContent(new LoginView());
 			addStyleName("loginview");
@@ -77,9 +76,18 @@ public final class RemUI extends UI {
 
 	@Subscribe
 	public void userLoginRequested(final UserLoginRequestedEvent event) {
-		DashboardUser user = getDataProvider().authenticate(event.getUserName(), event.getPassword());
-		VaadinSession.getCurrent().setAttribute(DashboardUser.class.getName(), user);
-		updateContent();
+		loggedUser = UserManager.getInstance().login(event.getUserName(), event.getPassword());
+		if (loggedUser != null) {
+			VaadinSession.getCurrent().setAttribute(User.class.getName(), loggedUser);
+			// Authenticated user
+			setContent(new MainView());
+			removeStyleName("loginview");
+			getNavigator().navigateTo(getNavigator().getState());
+		} else {
+			Notification.show("Usuario o contraseña incorrecta", Notification.Type.ERROR_MESSAGE);
+			// setContent(new LoginView());
+			// addStyleName("loginview");
+		}
 	}
 
 	@Subscribe
@@ -107,5 +115,13 @@ public final class RemUI extends UI {
 
 	public static DashboardEventBus getDashboardEventbus() {
 		return ((RemUI) getCurrent()).dashboardEventbus;
+	}
+
+	public User getLoggedUser() {
+		return loggedUser;
+	}
+
+	public void setLoggedUser(User loggedUser) {
+		this.loggedUser = loggedUser;
 	}
 }

@@ -13,7 +13,7 @@
 		<property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
 		<property name="hibernate.connection.url">jdbc:mysql://localhost/SantosDumont?autoReconnect=true&amp;useUnicode=true&amp;createDatabaseIfNotExist=true&amp;characterEncoding=utf-8</property>
 		<property name="hibernate.connection.username">root</property>
-		<property name="hibernate.connection.password"></property>
+		<property name="hibernate.connection.password">m4dyt3l</property>
 		<property name="hibernate.connection.autocommit">false</property>
 
 		<!-- SQL dialect -->
@@ -37,8 +37,8 @@
 		<property name="hibernate.cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
 
 		<!-- SQL statement writing. -->
-		<property name="hibernate.show_sql">true</property>
-		<property name="hibernate.format_sql">true</property>
+		<property name="hibernate.show_sql">false</property>
+		<property name="hibernate.format_sql">false</property>
 		<property name="hibernate.use_sql_comments">false</property>
 		<property name="hibernate.generate_statistics">false</property>
 
@@ -46,9 +46,9 @@
 
 		<!-- Accounting -->
 		<mapping
-		class="uy.com.innobit.rem.persistence.datamodel.accounting.CurrentAccount"  />
+			class="uy.com.innobit.rem.persistence.datamodel.accounting.CurrentAccount" />
 		<mapping
-		class="uy.com.innobit.rem.persistence.datamodel.accounting.Transaction" />
+			class="uy.com.innobit.rem.persistence.datamodel.accounting.Transaction" />
 
 		<!-- clients -->
 		<mapping class="uy.com.innobit.rem.persistence.datamodel.clients.Individual" />
@@ -56,36 +56,43 @@
 		<mapping class="uy.com.innobit.rem.persistence.datamodel.clients.Owner" />
 
 		<!-- Contract -->
-		<mapping class="uy.com.innobit.rem.persistence.datamodel.contract.ContractCharge" />
+		<mapping
+			class="uy.com.innobit.rem.persistence.datamodel.contract.ContractCharge" />
 		<mapping class="uy.com.innobit.rem.persistence.datamodel.contract.Contract" />
 		<mapping
-		class="uy.com.innobit.rem.persistence.datamodel.contract.ContractDocument" />
+			class="uy.com.innobit.rem.persistence.datamodel.contract.ContractDocument" />
 		<mapping
-		class="uy.com.innobit.rem.persistence.datamodel.contract.ContractEntry" />
+			class="uy.com.innobit.rem.persistence.datamodel.contract.ContractEntry" />
 		<mapping
-		class="uy.com.innobit.rem.persistence.datamodel.contract.ContractExpense" />
+			class="uy.com.innobit.rem.persistence.datamodel.contract.ContractExpiration" />
 		<mapping
-		class="uy.com.innobit.rem.persistence.datamodel.contract.ContractNotification" />
+			class="uy.com.innobit.rem.persistence.datamodel.contract.ContractExpense" />
 		<mapping
-		class="uy.com.innobit.rem.persistence.datamodel.contract.ContractPayment" />
+			class="uy.com.innobit.rem.persistence.datamodel.contract.ContractNotification" />
 		<mapping
-		class="uy.com.innobit.rem.persistence.datamodel.contract.ContractCharge" />
+			class="uy.com.innobit.rem.persistence.datamodel.contract.ContractPayment" />
+		<mapping
+			class="uy.com.innobit.rem.persistence.datamodel.contract.ContractCharge" />
 
 		<!-- Property -->
 		<mapping class="uy.com.innobit.rem.persistence.datamodel.property.Property" />
 		<mapping
-		class="uy.com.innobit.rem.persistence.datamodel.property.PropertyDocument" />
+			class="uy.com.innobit.rem.persistence.datamodel.property.PropertyDocument" />
 		<mapping
-		class="uy.com.innobit.rem.persistence.datamodel.property.PropertyNotification" />
+			class="uy.com.innobit.rem.persistence.datamodel.property.PropertyNotification" />
 		<mapping
-		class="uy.com.innobit.rem.persistence.datamodel.property.PropertyPicture" />
+			class="uy.com.innobit.rem.persistence.datamodel.property.PropertyPicture" />
 		<mapping
-		class="uy.com.innobit.rem.persistence.datamodel.property.inventory.Inventory" />
+			class="uy.com.innobit.rem.persistence.datamodel.property.inventory.Inventory" />
 		<mapping
-		class="uy.com.innobit.rem.persistence.datamodel.property.inventory.InventoryItem" />
+			class="uy.com.innobit.rem.persistence.datamodel.property.inventory.InventoryItem" />
+
 
 		<!-- User -->
 		<mapping class="uy.com.innobit.rem.persistence.datamodel.user.User" />
+		<mapping
+			class="uy.com.innobit.rem.persistence.datamodel.whatsapp.WhatsappMessage" />
+		<mapping class="uy.com.innobit.rem.persistence.datamodel.mail.MailMessage" />
 
 	</session-factory>
 

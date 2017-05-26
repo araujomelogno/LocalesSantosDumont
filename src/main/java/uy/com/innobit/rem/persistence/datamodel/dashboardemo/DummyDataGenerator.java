@@ -155,5 +155,8 @@ public abstract class DummyDataGenerator {
     public static Color[] chartColors = new Color[] {
             new SolidColor("#3090F0"), new SolidColor("#18DDBB"),
             new SolidColor("#98DF58"), new SolidColor("#F9DD51"),
+            new SolidColor("#F09042"), new SolidColor("#EC6464") ,
+            new SolidColor("#3090F0"), new SolidColor("#18DDBB"),
+            new SolidColor("#98DF58"), new SolidColor("#F9DD51"),
             new SolidColor("#F09042"), new SolidColor("#EC6464") };
 }

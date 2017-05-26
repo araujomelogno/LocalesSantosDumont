@@ -1,14 +1,16 @@
 package uy.com.innobit.rem.persistence.datamodel.property;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 import uy.com.innobit.rem.persistence.datamodel.Bean;
 
@@ -19,13 +21,13 @@ public class PropertyPicture extends Bean {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
 	private String name;
-	private String mimeType;
+	private Date uploaded;
 	@Lob
 	@Basic(fetch = FetchType.EAGER)
 	private byte[] content;
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "property_id", nullable = false)
-	private Property property;
+
+	@Transient
+	private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 	public Integer getId() {
 		return id;
@@ -43,14 +45,6 @@ public class PropertyPicture extends Bean {
 		this.name = name;
 	}
 
-	public String getMimeType() {
-		return mimeType;
-	}
-
-	public void setMimeType(String mimeType) {
-		this.mimeType = mimeType;
-	}
-
 	public byte[] getContent() {
 		return content;
 	}
@@ -59,12 +53,33 @@ public class PropertyPicture extends Bean {
 		this.content = content;
 	}
 
-	public Property getProperty() {
-		return property;
+	public Date getUploaded() {
+		return uploaded;
 	}
 
-	public void setProperty(Property property) {
-		this.property = property;
+	public void setUploaded(Date uploaded) {
+		this.uploaded = uploaded;
+	}
+
+	public String getDateSDF() {
+		if (uploaded == null)
+			return "";
+		else
+			return sdf.format(uploaded);
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof PropertyPicture) {
+			PropertyPicture new_name = (PropertyPicture) obj;
+			return id.equals(new_name.getId());
+		}
+		return false;
 	}
 
 }

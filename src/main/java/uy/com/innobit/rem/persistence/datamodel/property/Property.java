@@ -1,5 +1,6 @@
 package uy.com.innobit.rem.persistence.datamodel.property;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,6 +19,7 @@ import org.hibernate.annotations.FetchMode;
 import uy.com.innobit.rem.persistence.datamodel.Bean;
 import uy.com.innobit.rem.persistence.datamodel.clients.Owner;
 import uy.com.innobit.rem.persistence.datamodel.contract.Contract;
+import uy.com.innobit.rem.persistence.datamodel.contract.ContractEntry;
 
 @Entity(name = "property")
 public class Property extends Bean {
@@ -28,7 +30,7 @@ public class Property extends Bean {
 	private Integer id;
 
 	private String name;
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = true)
 	@JoinColumn(name = "owner_id")
 	private Owner owner;
 	private String address;
@@ -217,6 +219,15 @@ public class Property extends Bean {
 	}
 
 	public boolean isEmpty() {
+		Date now = new Date();
+		for (Contract p : contracts)
+			if (p.getInit() != null && p.getInit().before(now) && p.getEnd() != null && p.getEnd().after(now)) {
+				for (ContractEntry entry : p.getEntries()) {
+					if (entry.getInit() != null && entry.getInit().before(now) && entry.getEnd() != null
+							&& entry.getEnd().after(now) && entry.isActive())
+						return false;
+				}
+			}
 		return true;
 	}
 
@@ -250,6 +261,14 @@ public class Property extends Bean {
 
 	public void setPayExpenses(Boolean payExpenses) {
 		this.payExpenses = payExpenses;
+	}
+
+	public Contract getActualContract() {
+		Date now = new Date();
+		for (Contract c : contracts)
+			if (c.getInit() != null && c.getEnd() != null && !now.before(c.getInit()) && !now.after(c.getEnd()))
+				return c;
+		return null;
 	}
 
 }

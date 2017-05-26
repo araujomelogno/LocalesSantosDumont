@@ -1,9 +1,12 @@
 package uy.com.innobit.rem.presentation.view;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
 import com.google.common.eventbus.Subscribe;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -20,7 +23,8 @@ import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
-import uy.com.innobit.rem.persistence.datamodel.dashboardemo.DashboardUser;
+import uy.com.innobit.rem.persistence.datamodel.user.User;
+import uy.com.innobit.rem.presentation.RemUI;
 import uy.com.innobit.rem.presentation.component.ProfilePreferencesWindow;
 import uy.com.innobit.rem.presentation.event.DashboardEvent.PostViewChangeEvent;
 import uy.com.innobit.rem.presentation.event.DashboardEvent.ProfileUpdatedEvent;
@@ -71,7 +75,7 @@ public final class DashboardMenu extends CustomComponent {
 	}
 
 	private Component buildTitle() {
-		Label logo = new Label("<strong>Real Estate Manager</strong>", ContentMode.HTML);
+		Label logo = new Label("<strong>Gestión de Locales</strong>", ContentMode.HTML);
 		logo.setSizeUndefined();
 		HorizontalLayout logoWrapper = new HorizontalLayout(logo);
 		logoWrapper.setComponentAlignment(logo, Alignment.MIDDLE_CENTER);
@@ -79,20 +83,27 @@ public final class DashboardMenu extends CustomComponent {
 		return logoWrapper;
 	}
 
-	private DashboardUser getCurrentUser() {
-		return (DashboardUser) VaadinSession.getCurrent().getAttribute(DashboardUser.class.getName());
-	}
-
 	private Component buildUserMenu() {
 		final MenuBar settings = new MenuBar();
 		settings.addStyleName("user-menu");
-		final DashboardUser user = getCurrentUser();
-		settingsItem = settings.addItem("", new ThemeResource("img/profile-pic-300px.jpg"), null);
+		if (RemUI.get().getLoggedUser() == null || RemUI.get().getLoggedUser().getPicture() == null)
+			settingsItem = settings.addItem("", new ThemeResource("img/profile-pic-300px.jpg"), null);
+		else {
+			StreamResource resource = new StreamResource(new StreamResource.StreamSource() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public InputStream getStream() {
+					return new ByteArrayInputStream(RemUI.get().getLoggedUser().getPicture());
+				}
+			}, "");
+			settingsItem = settings.addItem("", resource, null);
+		}
 		updateUserName(null);
 		settingsItem.addItem("Editar Perfil", new Command() {
 			@Override
 			public void menuSelected(final MenuItem selectedItem) {
-				ProfilePreferencesWindow.open(user, false);
+				ProfilePreferencesWindow.open(RemUI.get().getLoggedUser(), false);
 			}
 		});
 		settingsItem.addSeparator();
@@ -130,34 +141,39 @@ public final class DashboardMenu extends CustomComponent {
 		for (final DashboardViewType view : DashboardViewType.values()) {
 			Component menuItemComponent = new ValoMenuItemButton(view);
 
-//			if (view == DashboardViewType.REPORTS) {
-//				// Add drop target to reports button
-//				DragAndDropWrapper reports = new DragAndDropWrapper(menuItemComponent);
-//				reports.setSizeUndefined();
-//				reports.setDragStartMode(DragStartMode.NONE);
-//				reports.setDropHandler(new DropHandler() {
-//
-//					@Override
-//					public void drop(final DragAndDropEvent event) {
-//						UI.getCurrent().getNavigator().navigateTo(DashboardViewType.REPORTS.getViewName());
-//						Table table = (Table) event.getTransferable().getSourceComponent();
-//						DashboardEventBus.post(new TransactionReportEvent((Collection<Transaction>) table.getValue()));
-//					}
-//
-//					@Override
-//					public AcceptCriterion getAcceptCriterion() {
-//						return AcceptItem.ALL;
-//					}
-//
-//				});
-//				menuItemComponent = reports;
-//			}
+			// if (view == DashboardViewType.REPORTS) {
+			// // Add drop target to reports button
+			// DragAndDropWrapper reports = new
+			// DragAndDropWrapper(menuItemComponent);
+			// reports.setSizeUndefined();
+			// reports.setDragStartMode(DragStartMode.NONE);
+			// reports.setDropHandler(new DropHandler() {
+			//
+			// @Override
+			// public void drop(final DragAndDropEvent event) {
+			// UI.getCurrent().getNavigator().navigateTo(DashboardViewType.REPORTS.getViewName());
+			// Table table = (Table)
+			// event.getTransferable().getSourceComponent();
+			// DashboardEventBus.post(new
+			// TransactionReportEvent((Collection<Transaction>)
+			// table.getValue()));
+			// }
+			//
+			// @Override
+			// public AcceptCriterion getAcceptCriterion() {
+			// return AcceptItem.ALL;
+			// }
+			//
+			// });
+			// menuItemComponent = reports;
+			// }
 
-//			if (view == DashboardViewType.DASHBOARD) {
-//				notificationsBadge = new Label();
-//				notificationsBadge.setId(NOTIFICATIONS_BADGE_ID);
-//				menuItemComponent = buildBadgeWrapper(menuItemComponent, notificationsBadge);
-//			}
+			// if (view == DashboardViewType.DASHBOARD) {
+			// notificationsBadge = new Label();
+			// notificationsBadge.setId(NOTIFICATIONS_BADGE_ID);
+			// menuItemComponent = buildBadgeWrapper(menuItemComponent,
+			// notificationsBadge);
+			// }
 			// if (view == DashboardViewType.REPORTS) {
 			// reportsBadge = new Label();
 			// reportsBadge.setId(REPORTS_BADGE_ID);
@@ -171,21 +187,22 @@ public final class DashboardMenu extends CustomComponent {
 
 	}
 
-//	private Component buildBadgeWrapper(final Component menuItemButton, final Component badgeLabel) {
-//		CssLayout dashboardWrapper = new CssLayout(menuItemButton);
-//		dashboardWrapper.addStyleName("badgewrapper");
-//		dashboardWrapper.addStyleName(ValoTheme.MENU_ITEM);
-//		badgeLabel.addStyleName(ValoTheme.MENU_BADGE);
-//		badgeLabel.setWidthUndefined();
-//		badgeLabel.setVisible(false);
-//		dashboardWrapper.addComponent(badgeLabel);
-//		return dashboardWrapper;
-//	}
+	// private Component buildBadgeWrapper(final Component menuItemButton, final
+	// Component badgeLabel) {
+	// CssLayout dashboardWrapper = new CssLayout(menuItemButton);
+	// dashboardWrapper.addStyleName("badgewrapper");
+	// dashboardWrapper.addStyleName(ValoTheme.MENU_ITEM);
+	// badgeLabel.addStyleName(ValoTheme.MENU_BADGE);
+	// badgeLabel.setWidthUndefined();
+	// badgeLabel.setVisible(false);
+	// dashboardWrapper.addComponent(badgeLabel);
+	// return dashboardWrapper;
+	// }
 
 	@Override
 	public void attach() {
 		super.attach();
-//		updateNotificationsCount(null);
+		// updateNotificationsCount(null);
 	}
 
 	@Subscribe
@@ -211,8 +228,10 @@ public final class DashboardMenu extends CustomComponent {
 
 	@Subscribe
 	public void updateUserName(final ProfileUpdatedEvent event) {
-		DashboardUser user = getCurrentUser();
-		settingsItem.setText("Demo");
+
+		User user = RemUI.get().getLoggedUser();
+		if (user != null)
+			settingsItem.setText(user.getName());
 	}
 
 	public final class ValoMenuItemButton extends Button {
