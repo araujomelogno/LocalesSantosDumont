@@ -122,8 +122,10 @@ public class ContractListView extends MVerticalLayout implements View {
 		currency.setNullSelectionAllowed(false);
 
 		addComponents(new MHorizontalLayout(header, exportTableButton).expand(header).alignAll(Alignment.MIDDLE_LEFT),
-				new MHorizontalLayout(init, end, currency, query).alignAll(Alignment.MIDDLE_LEFT), mainContent);
-		setComponentAlignment(query, Alignment.BOTTOM_LEFT);
+				new MHorizontalLayout(init, end, currency, query).alignAll(Alignment.MIDDLE_LEFT).withAlign(query,
+						Alignment.BOTTOM_LEFT),
+				mainContent);
+
 		setMargin(new MarginInfo(false, false, false, false));
 		expand(mainContent);
 	}

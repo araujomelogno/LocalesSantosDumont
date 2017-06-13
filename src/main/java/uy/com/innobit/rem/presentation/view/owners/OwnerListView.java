@@ -113,17 +113,19 @@ public class OwnerListView extends MVerticalLayout implements View {
 	}
 
 	private synchronized void listCustomers(String filterString) {
+		
 		if (filterString != null && !filterString.isEmpty()) {
+			filterString = filterString.toLowerCase();
 			List<Owner> aux = new ArrayList<Owner>();
 			for (Owner owner : owners)
-				if ((owner.getName() != null && owner.getName().contains(filterString))
-						|| (owner.getSurname() != null && owner.getSurname().contains(filterString))
-						|| (owner.getDoc() != null && owner.getDoc().contains(filterString))
-						|| (owner.getSocialReason() != null && owner.getSocialReason().contains(filterString))
-						|| (owner.getTel() != null && owner.getTel().contains(filterString))
-						|| (owner.getRut() != null && owner.getRut().contains(filterString))
-						|| (owner.getMail() != null && owner.getMail().contains(filterString))
-						|| (owner.getCell() != null && owner.getCell().contains(filterString)))
+				if ((owner.getName() != null && owner.getName().toLowerCase().contains(filterString))
+						|| (owner.getSurname() != null && owner.getSurname().toLowerCase().contains(filterString))
+						|| (owner.getDoc() != null && owner.getDoc().toLowerCase().contains(filterString))
+						|| (owner.getSocialReason() != null && owner.getSocialReason().toLowerCase().contains(filterString))
+						|| (owner.getTel() != null && owner.getTel().toLowerCase().contains(filterString))
+						|| (owner.getRut() != null && owner.getRut().toLowerCase().contains(filterString))
+						|| (owner.getMail() != null && owner.getMail().toLowerCase().contains(filterString))
+						|| (owner.getCell() != null && owner.getCell().toLowerCase().contains(filterString)))
 					aux.add(owner);
 			customerTable.clear();
 			customerTable.setBeans(aux);

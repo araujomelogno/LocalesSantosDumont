@@ -135,15 +135,19 @@ public class PropertyListView extends MVerticalLayout implements View {
 	}
 
 	private synchronized void listCustomers(String filterString) {
+
 		if (filterString != null && !filterString.isEmpty()) {
+			filterString = filterString.toLowerCase();
+
 			List<Property> aux = new ArrayList<Property>();
 			for (Property property : properties)
-				if ((property.getName() != null && property.getName().contains(filterString))
-						|| (property.getNro() != null && property.getNro().contains(filterString))
-						|| (property.getPadron() != null && property.getPadron().contains(filterString))
-						|| (property.getBlock() != null && property.getBlock().contains(filterString))
-						|| (property.getTel() != null && property.getTel().contains(filterString))
-						|| (property.getAddress() != null && property.getAddress().contains(filterString)))
+				if ((property.getName() != null && property.getName().toLowerCase().contains(filterString))
+						|| (property.getNro() != null && property.getNro().toLowerCase().contains(filterString))
+						|| (property.getPadron() != null && property.getPadron().toLowerCase().contains(filterString))
+						|| (property.getBlock() != null && property.getBlock().toLowerCase().contains(filterString))
+						|| (property.getTel() != null && property.getTel().toLowerCase().contains(filterString))
+						|| (property.getAddress() != null
+								&& property.getAddress().toLowerCase().contains(filterString)))
 					aux.add(property);
 			propertyTable.clear();
 			propertyTable.setBeans(aux);

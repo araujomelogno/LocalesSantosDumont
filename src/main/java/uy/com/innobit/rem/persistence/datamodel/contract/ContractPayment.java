@@ -33,6 +33,8 @@ public class ContractPayment extends Bean {
 	private Date checkDate;
 	private String checkNumber;
 	private String bank;
+	private String obs;
+
 
 	@Lob
 	@Basic(fetch = FetchType.EAGER)
@@ -189,6 +191,14 @@ public class ContractPayment extends Bean {
 
 	public void setDollarCotization(Double dollarCotization) {
 		this.dollarCotization = dollarCotization;
+	}
+
+	public String getObs() {
+		return obs;
+	}
+
+	public void setObs(String obs) {
+		this.obs = obs;
 	}
 
 }

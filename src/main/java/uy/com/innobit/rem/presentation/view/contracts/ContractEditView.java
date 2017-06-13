@@ -65,6 +65,7 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.TableFieldFactory;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload;
@@ -390,7 +391,9 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 		});
 		upload.setButtonCaption("Frente cheque");
 		upload.setImmediate(true);
-		HorizontalLayout hl = new HorizontalLayout(add);
+		TextArea obs = new TextArea("Observaciones:");
+		obs.setWidth(11f, UNITS_CM);
+		HorizontalLayout hl = new HorizontalLayout(obs, add);
 		hl.setSpacing(true);
 
 		final DateField date = new DateField("Fecha:");
@@ -488,6 +491,7 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 						ContractCharge p = new ContractCharge();
 						p.setSource(source.getValue().toString());
 						p.setPaymentDate(date.getValue());
+						p.setObs(obs.getValue());
 						p.setAmount(new Double(amount.getValue().replace(",", "")));
 						p.setCurrency(currency.getValue().toString());
 						p.setCommission(commission.getValue().toString().equalsIgnoreCase("si"));
@@ -508,6 +512,7 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 						charges.getContainerDataSource().addItem(p);
 						date.setValue(new Date());
 						amount.setValue("");
+						obs.setValue("");
 						currency.setValue("$");
 						type.setValue("Efectivo");
 						commission.setValue("No");
@@ -526,6 +531,7 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 					p.setPaymentDate(date.getValue());
 					p.setAmount(new Double(amount.getValue().replace(",", "")));
 					p.setCurrency(currency.getValue().toString());
+					p.setObs(obs.getValue());
 					p.setCommission(commission.getValue().toString().equalsIgnoreCase("si"));
 					p.setType(type.getValue().toString());
 					if (type.getValue().toString().equalsIgnoreCase("cheque")) {
@@ -549,6 +555,7 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 					bank.setValue("");
 					checkDate.setValue(null);
 					checkNumber.setValue("");
+					obs.setValue("");
 					source.setValue("Inquilino");
 					totalCharges.markAsDirty();
 					totalPayments.markAsDirty();
@@ -564,17 +571,21 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				ContractCharge charge = (ContractCharge) charges.getValue();
-				date.setValue(charge.getPaymentDate());
-				amount.setValue(charge.getAmount().toString());
-				currency.setValue(charge.getCurrency());
-				type.setValue(charge.getCheckPayment() ? "Cheque" : "Efectivo");
-				commission.setValue(charge.getCommission() ? "Si" : "No");
-				bank.setValue(charge.getBank());
-				checkDate.setValue(charge.getCheckDate());
-				checkNumber.setValue(charge.getCheckNumber());
-				source.setValue(charge.getSource());
-				uploadData = charge.getCheckImage();
-				uploadDataName = charge.getCheckName();
+				if (charge != null) {
+					date.setValue(charge.getPaymentDate());
+					amount.setValue(charge.getAmount().toString());
+					obs.setValue(charge.getObs());
+					currency.setValue(charge.getCurrency());
+					type.setValue(charge.getCheckPayment() ? "Cheque" : "Efectivo");
+					commission.setValue(charge.getCommission() ? "Si" : "No");
+					bank.setValue(charge.getBank());
+					checkDate.setValue(charge.getCheckDate());
+					checkNumber.setValue(charge.getCheckNumber());
+					source.setValue(charge.getSource());
+					uploadData = charge.getCheckImage();
+					uploadDataName = charge.getCheckName();
+
+				}
 			}
 
 		});
@@ -822,7 +833,9 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 		});
 		upload.setButtonCaption("Frente cheque");
 		upload.setImmediate(true);
-		HorizontalLayout hl = new HorizontalLayout(add);
+		TextArea obs = new TextArea("Observaciones:");
+		obs.setWidth(11f, UNITS_CM);
+		HorizontalLayout hl = new HorizontalLayout(obs, add);
 		hl.setSpacing(true);
 
 		final DateField date = new DateField("Fecha:");
@@ -922,6 +935,7 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 						p.setCurrency(currency.getValue().toString());
 						p.setType(type.getValue().toString());
 						p.setDollarCotization(Double.parseDouble(input.getValue()));
+						p.setObs(obs.getValue());
 						if (type.getValue().toString().equalsIgnoreCase("cheque")) {
 							p.setCheckPayment(true);
 							p.setCheckDate(checkDate.getValue());
@@ -946,6 +960,7 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 						contractEntries.refreshRowCache();
 						uploadData = null;
 						uploadDataName = "";
+						obs.setValue("");
 					}).withCancelButton().open();
 				} else {
 					ContractPayment p = new ContractPayment();
@@ -953,6 +968,7 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 					p.setAmount(new Double(amount.getValue().replace(",", "")));
 					p.setCurrency(currency.getValue().toString());
 					p.setType(type.getValue().toString());
+					p.setObs(obs.getValue());
 					if (type.getValue().toString().equalsIgnoreCase("cheque")) {
 						p.setCheckPayment(true);
 						p.setCheckDate(checkDate.getValue());
@@ -969,6 +985,7 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 					date.setValue(new Date());
 					amount.setValue("");
 					currency.setValue("$");
+					obs.setValue("");
 					type.setValue("Efectivo");
 					bank.setValue("");
 					checkDate.setValue(null);
@@ -989,17 +1006,21 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				ContractPayment payment = (ContractPayment) payments.getValue();
-				date.setValue(payment.getPaymentDate());
-				amount.setValue(payment.getAmount().toString());
-				currency.setValue(payment.getCurrency());
-				type.setValue(payment.getCheckPayment() ? "Cheque" : "Efectivo");
+				if (payment != null) {
 
-				bank.setValue(payment.getBank());
-				checkDate.setValue(payment.getCheckDate());
-				checkNumber.setValue(payment.getCheckNumber());
+					date.setValue(payment.getPaymentDate());
+					amount.setValue(payment.getAmount().toString());
+					currency.setValue(payment.getCurrency());
+					type.setValue(payment.getCheckPayment() ? "Cheque" : "Efectivo");
 
-				uploadData = payment.getCheckImage();
-				uploadDataName = payment.getCheckName();
+					bank.setValue(payment.getBank());
+					checkDate.setValue(payment.getCheckDate());
+					checkNumber.setValue(payment.getCheckNumber());
+					obs.setValue(payment.getObs());
+					uploadData = payment.getCheckImage();
+					uploadDataName = payment.getCheckName();
+
+				}
 			}
 
 		});

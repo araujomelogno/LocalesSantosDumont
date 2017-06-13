@@ -89,12 +89,14 @@ public class UserListView extends MVerticalLayout implements View {
 	}
 
 	private synchronized void listCustomers(String filterString) {
+
 		if (filterString != null && !filterString.isEmpty()) {
+			filterString = filterString.toLowerCase();
 			List<User> aux = new ArrayList<User>();
 			for (User user : users)
-				if ((user.getName() != null && user.getName().contains(filterString))
-						|| (user.getLogin() != null && user.getLogin().contains(filterString))
-						|| (user.getEmail() != null && user.getEmail().contains(filterString)))
+				if ((user.getName() != null && user.getName().toLowerCase().contains(filterString))
+						|| (user.getLogin() != null && user.getLogin().toLowerCase().contains(filterString))
+						|| (user.getEmail() != null && user.getEmail().toLowerCase().contains(filterString)))
 					aux.add(user);
 			usersTable.clear();
 			usersTable.setBeans(aux);

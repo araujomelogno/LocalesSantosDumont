@@ -1,5 +1,6 @@
 package uy.com.innobit.rem.persistence.util;
 
+import java.io.File;
 import java.io.Serializable;
 
 import org.apache.log4j.LogManager;
@@ -36,11 +37,11 @@ public final class HibernateSessionFactory implements Serializable {
 		try {
 			// Builds Hibernate configuration.
 			final AnnotationConfiguration cnf = new AnnotationConfiguration();
-			cnf.configure("hibernate.cfg.xml");
+			cnf.configure(("hibernate.cfg.xml"));
 			// Builds session factory from configuration.
 			sessionFactory = cnf.buildSessionFactory();// new
 														// Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
-			
+
 		} catch (final Throwable e) {
 
 			LOG.fatal("Cannot configure or build Hibernate session factory.", e);

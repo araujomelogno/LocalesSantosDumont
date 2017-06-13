@@ -3,7 +3,6 @@ package uy.com.innobit.rem.business.managers;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.tools.ant.types.PropertySet.PropertyRef;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 

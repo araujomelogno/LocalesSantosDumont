@@ -46,6 +46,15 @@ public class ContractManager {
 		return list.get(0);
 	}
 
+	public synchronized ContractEntry getEntryByID(Integer id) {
+		List<Criterion> criterias = new ArrayList<Criterion>();
+		criterias.add(Restrictions.eq("id", id));
+		List<ContractEntry> list = DBEntityManagerFactory.get(ContractEntry.class).getByCriterion(criterias);
+		if (list == null || list.isEmpty())
+			return null;
+		return list.get(0);
+	}
+
 	public synchronized List<ContractExpiration> getContractActualExpirations(String currency) {
 		List<Criterion> criterias = new ArrayList<Criterion>();
 		Date aux = new Date();
@@ -77,6 +86,10 @@ public class ContractManager {
 
 	public synchronized void updateContract(Contract contract) {
 		DBEntityManagerFactory.get(Contract.class).updateEntity(contract);
+	}
+
+	public synchronized void updateEntry(ContractEntry entry) {
+		DBEntityManagerFactory.get(ContractEntry.class).updateEntity(entry);
 	}
 
 	public void saveContractReminder(ContractNotification p) {

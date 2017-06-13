@@ -37,6 +37,7 @@ public class ContractCharge extends Bean {
 	private String checkNumber;
 	private String bank;
 	private Boolean commission = false;
+	private String obs;
 
 	@Lob
 	@Basic(fetch = FetchType.EAGER)
@@ -219,6 +220,14 @@ public class ContractCharge extends Bean {
 
 	public void setSource(String source) {
 		this.source = source;
+	}
+
+	public String getObs() {
+		return obs;
+	}
+
+	public void setObs(String obs) {
+		this.obs = obs;
 	}
 
 }
