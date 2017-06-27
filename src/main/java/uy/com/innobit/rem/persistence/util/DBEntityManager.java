@@ -93,9 +93,6 @@ public class DBEntityManager<T> {
 		return id;
 	}
 
-	
-	
-	
 	/**
 	 * HbnContainer specific method to update entity.
 	 * 
@@ -167,10 +164,9 @@ public class DBEntityManager<T> {
 	public synchronized List<T> getAll() {
 		return getCriteria().list();
 	}
-	
-	
+
 	public synchronized Number count() {
-		return (Number)getCriteria().setProjection(Projections.rowCount()).uniqueResult();
+		return (Number) getCriteria().setProjection(Projections.rowCount()).uniqueResult();
 
 	}
 
@@ -369,6 +365,10 @@ public class DBEntityManager<T> {
 			sessionManager.getSession().getTransaction().commit();
 		}
 		return result;
+	}
+
+	public SessionManager getSessionManager() {
+		return sessionManager;
 	}
 
 }

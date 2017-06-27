@@ -10,6 +10,8 @@ import org.vaadin.viritin.layouts.MVerticalLayout;
 import com.vaadin.addon.tableexport.ExcelExport;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Page;
@@ -22,9 +24,12 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
 
 import uy.com.innobit.rem.business.managers.ContractManager;
+import uy.com.innobit.rem.persistence.datamodel.contract.Contract;
 import uy.com.innobit.rem.persistence.datamodel.contract.ContractEntry;
+import uy.com.innobit.rem.presentation.view.properties.PropertyForm;
 
 public class ContractListView extends MVerticalLayout implements View {
 
@@ -39,10 +44,11 @@ public class ContractListView extends MVerticalLayout implements View {
 	private Double totalClientComission = 0d;
 	private Double totalOwnerComissionCharged = 0d;
 	private Double totalClientComissionCharged = 0d;
-	private Double totalRentalCharged = 0d;
-	private Double totalRentalPaid = 0d;
-	private Double totalFinalPaymentToOwner = 0d;
+
+	// private Double totalFinalPaymentToOwner = 0d;
 	private Double totalNextYearEntryAmount = 0d;
+	private Double totalNextYearClientCommision = 0d;
+	private Double totalNextYearOwnerCommision = 0d;
 	private ExcelExport excelExport;
 	private ComboBox currency;
 
@@ -71,11 +77,11 @@ public class ContractListView extends MVerticalLayout implements View {
 				totalClientComission = 0d;
 				totalOwnerComissionCharged = 0d;
 				totalClientComissionCharged = 0d;
-				totalRentalCharged = 0d;
-				totalRentalPaid = 0d;
-				totalFinalPaymentToOwner = 0d;
-				totalNextYearEntryAmount = 0d;
 
+				// totalFinalPaymentToOwner = 0d;
+				totalNextYearEntryAmount = 0d;
+				totalNextYearClientCommision = 0d;
+				totalNextYearOwnerCommision = 0d;
 				for (ContractEntry entry : ContractManager.getInstance().getContractEntries(init.getValue(),
 						end.getValue(), currency.getValue().toString())) {
 					table.getContainerDataSource().addItem(entry);
@@ -84,21 +90,25 @@ public class ContractListView extends MVerticalLayout implements View {
 					totalClientComission = totalClientComission + entry.getClientComission();
 					totalOwnerComissionCharged = totalOwnerComissionCharged + entry.getOwnerComissionCharged();
 					totalClientComissionCharged = totalClientComissionCharged + entry.getClientComissionCharged();
-					totalRentalCharged = totalRentalCharged + entry.getRentalCharged();
-					totalRentalPaid = totalRentalPaid + entry.getRentalPaid();
-					totalFinalPaymentToOwner = totalFinalPaymentToOwner + entry.getFinalPaymentToOwner();
-					totalNextYearEntryAmount = totalNextYearEntryAmount + entry.getNextEntryAmount();
 
+					// totalFinalPaymentToOwner = totalFinalPaymentToOwner +
+					// entry.getFinalPaymentToOwner();
+					totalNextYearEntryAmount = totalNextYearEntryAmount + entry.getNextEntryAmount();
+					totalNextYearClientCommision = totalNextYearClientCommision + entry.getNextEntryClientCommision();
+					totalNextYearOwnerCommision = totalNextYearOwnerCommision + entry.getNextEntryOwnerCommision();
 				}
 				table.setColumnFooter("amount", round(totalAmount, 0).toString());
 				table.setColumnFooter("ownerComission", round(totalOwnerComission, 0).toString());
 				table.setColumnFooter("clientComission", round(totalClientComission, 0).toString());
 				table.setColumnFooter("ownerComissionCharged", round(totalOwnerComissionCharged, 0).toString());
 				table.setColumnFooter("clientComissionCharged", round(totalClientComissionCharged, 0).toString());
-				table.setColumnFooter("rentalCharged", round(totalRentalCharged, 0).toString());
-				table.setColumnFooter("rentalPaid", round(totalRentalPaid, 0).toString());
-				table.setColumnFooter("finalPaymentToOwner", round(totalFinalPaymentToOwner, 0).toString());
+
+				// table.setColumnFooter("finalPaymentToOwner",
+				// round(totalFinalPaymentToOwner, 0).toString());
 				table.setColumnFooter("nextYearEntryAmount", round(totalNextYearEntryAmount, 0).toString());
+				table.setColumnFooter("totalNextYearClientCommision",
+						round(totalNextYearClientCommision, 0).toString());
+				table.setColumnFooter("totalNextYearOwnerCommision", round(totalNextYearOwnerCommision, 0).toString());
 
 			}
 		});
@@ -154,16 +164,19 @@ public class ContractListView extends MVerticalLayout implements View {
 		cont.addContainerProperty("clientComission", Double.class, 0d);
 		cont.addContainerProperty("ownerComissionCharged", Double.class, 0d);
 		cont.addContainerProperty("clientComissionCharged", Double.class, 0d);
-		cont.addContainerProperty("rentalCharged", Double.class, 0d);
-		cont.addContainerProperty("rentalPaid", Double.class, 0d);
-		cont.addContainerProperty("finalPaymentToOwner", Double.class, 0d);
+
+		// cont.addContainerProperty("finalPaymentToOwner", Double.class, 0d);
 		cont.addContainerProperty("nextEntryAmount", Double.class, 0d);
+		cont.addContainerProperty("nextEntryOwnerCommision", Double.class, 0d);
+		cont.addContainerProperty("nextEntryClientCommision", Double.class, 0d);
+
 		atable.setContainerDataSource(cont);
-		atable.setVisibleColumns("property", "owner", "occupant", "initSDF", "endSDF", "amount", "ownerComission",
-				"clientComission", "ownerComissionCharged", "clientComissionCharged", "rentalCharged", "rentalPaid",
-				"finalPaymentToOwner", "nextEntryAmount");
-		atable.setColumnHeaders("Local", "Propietario", "Inquilino", "Inicio", "Fin", "Monto", "Com. Prop.",
-				"Com. Inq.", "C. Prop. Cob", "C. Inq. Cob.", "Alq. Cob.", "Alq. Pag.", "Pago Final", "Monto prox. año");
+		atable.setVisibleColumns("property", "owner", "occupant", "initSDF", "endSDF", "amount", "nextEntryAmount",
+				"nextEntryOwnerCommision", "nextEntryClientCommision", "ownerComission", "clientComission",
+				"ownerComissionCharged", "clientComissionCharged");
+		atable.setColumnHeaders("Local", "Propietario", "Inquilino", "Inicio", "Fin", "Monto", "Monto prox. año",
+				"Com. Inq. prox. año", "Com. Prop. prox. año", "Com. Prop.", "Com. Inq.", "C. Prop. Cob",
+				"C. Inq. Cob.");
 
 		for (ContractEntry centry : (Collection<ContractEntry>) table.getContainerDataSource().getItemIds()) {
 			cont.addItem(centry.getId());
@@ -179,10 +192,11 @@ public class ContractListView extends MVerticalLayout implements View {
 					.setValue(centry.getOwnerComissionCharged());
 			cont.getContainerProperty(centry.getId(), "clientComissionCharged")
 					.setValue(centry.getClientComissionCharged());
-			cont.getContainerProperty(centry.getId(), "rentalCharged").setValue(centry.getRentalCharged());
-			cont.getContainerProperty(centry.getId(), "rentalPaid").setValue(centry.getRentalPaid());
-			cont.getContainerProperty(centry.getId(), "finalPaymentToOwner").setValue(centry.getFinalPaymentToOwner());
+			// cont.getContainerProperty(centry.getId(),
+			// "finalPaymentToOwner").setValue(centry.getFinalPaymentToOwner());
 			cont.getContainerProperty(centry.getId(), "nextEntryAmount").setValue(centry.getNextEntryAmount());
+			cont.getContainerProperty(centry.getId(), "nextEntryOwnerCommision").setValue(centry.getNextEntryAmount());
+			cont.getContainerProperty(centry.getId(), "nextEntryClientCommision").setValue(centry.getNextEntryAmount());
 
 		}
 
@@ -195,23 +209,45 @@ public class ContractListView extends MVerticalLayout implements View {
 		BeanItemContainer<ContractEntry> cont = new BeanItemContainer<ContractEntry>(ContractEntry.class);
 
 		table.setContainerDataSource(cont);
-		table.setVisibleColumns("property", "owner", "occupant", "initSDF", "endSDF", "amount", "ownerComission",
-				"clientComission", "ownerComissionCharged", "clientComissionCharged", "rentalCharged", "rentalPaid",
-				"finalPaymentToOwner", "nextEntryAmount");
-		table.setColumnHeaders("Local", "Propietario", "Inquilino", "Inicio", "Fin", "Monto", "Com. Prop.", "Com. Inq.",
-				"C. Prop. Cob", "C. Inq. Cob.", "Alq. Cob.", "Alq. Pag.", "Pago Final", "Monto prox. año");
+		table.setVisibleColumns("property", "owner", "occupant", "initSDF", "endSDF", "amount", "nextEntryAmount",
+				"nextEntryOwnerCommision", "nextEntryClientCommision", "ownerComission", "clientComission",
+				"ownerComissionCharged", "clientComissionCharged");
+		table.setColumnHeaders("Local", "Propietario", "Inquilino", "Inicio", "Fin", "Monto", "Monto prox. año",
+				"Com. Inq. prox. año", "Com. Prop. prox. año", "Com. Prop.", "Com. Inq.", "C. Prop. Cob",
+				"C. Inq. Cob.");
+
 		table.setColumnFooter("endSDF", "Total:");
 		table.setColumnFooter("amount", totalAmount.toString());
 		table.setColumnFooter("ownerComission", totalOwnerComission.toString());
 		table.setColumnFooter("clientComission", totalClientComission.toString());
 		table.setColumnFooter("ownerComissionCharged", totalOwnerComissionCharged.toString());
 		table.setColumnFooter("clientComissionCharged", totalClientComissionCharged.toString());
-		table.setColumnFooter("rentalCharged", totalRentalCharged.toString());
-		table.setColumnFooter("rentalPaid", totalRentalPaid.toString());
-		table.setColumnFooter("finalPaymentToOwner", totalFinalPaymentToOwner.toString());
+
+		// table.setColumnFooter("finalPaymentToOwner",
+		// totalFinalPaymentToOwner.toString());
 		table.setColumnFooter("nextEntryAmount", totalNextYearEntryAmount.toString());
+		table.setColumnFooter("nextEntryClientCommision", totalNextYearClientCommision.toString());
+		table.setColumnFooter("nextEntryOwnerCommision", totalNextYearOwnerCommision.toString());
 		table.setFooterVisible(true);
 		table.setFilterBarVisible(true);
+		table.addItemClickListener(new ItemClickListener() {
+
+			@Override
+			public void itemClick(ItemClickEvent event) {
+				ContractEntry contract = (ContractEntry) event.getItemId();
+				ContractEditForm w = new ContractEditForm(contract.getContract());
+				Window window = new Window();
+				window.setDraggable(false);
+				window.setModal(true);
+				window.setResizable(false);
+				window.setCaption("Contrato");
+				window.setWidth("95%");
+				window.setHeight("95%");
+				window.setStyleName("mipa");
+				window.setContent(w);
+				UI.getCurrent().addWindow(window);
+			}
+		});
 	}
 
 	@Override

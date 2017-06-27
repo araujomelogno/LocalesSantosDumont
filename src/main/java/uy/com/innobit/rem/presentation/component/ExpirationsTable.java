@@ -9,13 +9,20 @@ import java.util.List;
 import java.util.Map;
 
 import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import uy.com.innobit.rem.business.managers.ContractManager;
+import uy.com.innobit.rem.persistence.datamodel.contract.Contract;
+import uy.com.innobit.rem.persistence.datamodel.contract.ContractCharge;
 import uy.com.innobit.rem.persistence.datamodel.contract.ContractExpiration;
+import uy.com.innobit.rem.presentation.view.contracts.ContractEditForm;
 
 @SuppressWarnings("serial")
 public class ExpirationsTable extends Table {
@@ -82,60 +89,64 @@ public class ExpirationsTable extends Table {
 					ced = map.get(ce.getEntry().getProperty());
 				else {
 					ced = new ContractExpirationDataValue();
+					ced.setContract(ce.getEntry().getContract());
 					ced.setProperty(ce.getEntry().getProperty());
 					ced.setClientComission(ce.getEntry().getClientComission());
 					ced.setOwnerComission(ce.getEntry().getOwnerComission());
 					ced.setRentalTotal(ce.getEntry().getAmount());
 					map.put(ced.getProperty(), ced);
 				}
+				Double aux = 0d;
+				for (ContractCharge cc : ce.getContractCharges())
+					aux = aux + cc.getAmount();
 				switch (ce.getExpectedDate().getMonth()) {
 				case 0:
-					ced.setM1(ced.getM1() + ce.getAmount());
+					ced.setM1(ced.getM1() + ce.getAmount() - aux);
 					ced.setD1(ce.getExpectedDate().getDate());
 					break;
 				case 1:
-					ced.setM2(ced.getM2() + ce.getAmount());
+					ced.setM2(ced.getM2() + ce.getAmount() - aux);
 					ced.setD2(ce.getExpectedDate().getDate());
 					break;
 
 				case 2:
-					ced.setM3(ced.getM3() + ce.getAmount());
+					ced.setM3(ced.getM3() + ce.getAmount() - aux);
 					ced.setD3(ce.getExpectedDate().getDate());
 					break;
 				case 3:
-					ced.setM4(ced.getM4() + ce.getAmount());
+					ced.setM4(ced.getM4() + ce.getAmount() - aux);
 					ced.setD4(ce.getExpectedDate().getDate());
 					break;
 				case 4:
-					ced.setM5(ced.getM5() + ce.getAmount());
+					ced.setM5(ced.getM5() + ce.getAmount() - aux);
 					ced.setD5(ce.getExpectedDate().getDate());
 					break;
 				case 5:
-					ced.setM6(ced.getM6() + ce.getAmount());
+					ced.setM6(ced.getM6() + ce.getAmount() - aux);
 					ced.setD6(ce.getExpectedDate().getDate());
 					break;
 				case 6:
-					ced.setM7(ced.getM7() + ce.getAmount());
+					ced.setM7(ced.getM7() + ce.getAmount() - aux);
 					ced.setD7(ce.getExpectedDate().getDate());
 					break;
 				case 7:
-					ced.setM8(ced.getM8() + ce.getAmount());
+					ced.setM8(ced.getM8() + ce.getAmount() - aux);
 					ced.setD8(ce.getExpectedDate().getDate());
 					break;
 				case 8:
-					ced.setM9(ced.getM9() + ce.getAmount());
+					ced.setM9(ced.getM9() + ce.getAmount() - aux);
 					ced.setD9(ce.getExpectedDate().getDate());
 					break;
 				case 9:
-					ced.setM10(ced.getM10() + ce.getAmount());
+					ced.setM10(ced.getM10() + ce.getAmount() - aux);
 					ced.setD10(ce.getExpectedDate().getDate());
 					break;
 				case 10:
-					ced.setM11(ced.getM11() + ce.getAmount());
+					ced.setM11(ced.getM11() + ce.getAmount() - aux);
 					ced.setD11(ce.getExpectedDate().getDate());
 					break;
 				case 11:
-					ced.setM12(ced.getM12() + ce.getAmount());
+					ced.setM12(ced.getM12() + ce.getAmount() - aux);
 					ced.setD12(ce.getExpectedDate().getDate());
 					break;
 				default:
@@ -151,6 +162,24 @@ public class ExpirationsTable extends Table {
 			public int compare(ContractExpirationDataValue o1, ContractExpirationDataValue o2) {
 
 				return o1.getProperty().toLowerCase().trim().compareTo(o2.getProperty().toLowerCase().trim());
+			}
+		});
+		addItemClickListener(new ItemClickListener() {
+
+			@Override
+			public void itemClick(ItemClickEvent event) {
+				Contract contract = ((ContractExpirationDataValue) event.getItemId()).getContract();
+				ContractEditForm w = new ContractEditForm(contract);
+				Window window = new Window();
+				window.setDraggable(false);
+				window.setModal(true);
+				window.setResizable(false);
+				window.setCaption("Contrato");
+				window.setWidth("95%");
+				window.setHeight("95%");
+				window.setStyleName("mipa");
+				window.setContent(w);
+				UI.getCurrent().addWindow(window);
 			}
 		});
 		for (ContractExpirationDataValue data : list) {

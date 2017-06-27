@@ -19,7 +19,7 @@ public class TextFieldWithButton extends CssLayout {
 
 		textField = new TextField();
 		textField.setWidth(100, Unit.PERCENTAGE);
-
+		
 		button = new Button(icon);
 		button.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
 		button.addClickListener(listener);

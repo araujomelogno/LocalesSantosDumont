@@ -39,7 +39,7 @@ public class Translator {
 			HibernateSessionFactory.getSessionFactory();
 			HibernateUtil.getSessionFactory();
 			Translator t = new Translator();
-			t.createProperties();
+			t.createContractNotifications();	
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -233,9 +233,24 @@ public class Translator {
 			String number = "";
 			if (a[14] != null)
 				number = a[14].toString();
-			Property p = PropertyManager.getInstance().getById(id);
+			Property p = new Property();
+			p.setId(id);
 			p.setName(name);
-			PropertyManager.getInstance().updateProperty(p);
+			p.setAddress(address);
+			p.setPadron(padron);
+			p.setBlock(block);
+			p.setRefUte(refUte);
+			p.setRefAgua(refAgua);
+			p.setSize(size);
+			p.setPayExpenses(expenses);
+			p.setExpenses(expensesAmount);
+			p.setExpensesFreq(expensesFreq);
+			p.setObs(obs);
+			p.setTel(tel);
+			p.setNro(number);
+			Owner owner = OwnerManager.getInstance().getById(ownerId);
+			p.setOwner(owner);
+			PropertyManager.getInstance().saveProperty(p);
 
 		}
 
@@ -292,25 +307,16 @@ public class Translator {
 			System.out.println(a[0]);
 			Integer id = Integer.parseInt(a[0].toString());
 			String type = a[1].toString();
+			byte[] yourBytes = null;
 			String origin = a[2].toString();
 			String bank = a[3].toString();
 			String checknumber = a[4].toString();
 			SerializableBlob checkscan = (SerializableBlob) a[5];
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			byte[] yourBytes = null;
-			ObjectOutput out = null;
-			try {
-				out = new ObjectOutputStream(bos);
-				out.writeObject(checkscan);
-				out.flush();
-				yourBytes = bos.toByteArray();
+			if (checkscan != null) {
 
-			} finally {
-				try {
-					bos.close();
-				} catch (IOException ex) {
-					ex.printStackTrace();
-				}
+				int blobLength = (int) checkscan.length();
+				yourBytes = checkscan.getBytes(1, blobLength);
+
 			}
 			Date expDate = null;
 			if (a[6] != null)
@@ -366,24 +372,15 @@ public class Translator {
 			if (a[2] != null)
 				bank = a[2].toString();
 			String checknumber = null;
+			byte[] yourBytes = null;
 			if (a[3] != null)
 				checknumber = a[3].toString();
 			SerializableBlob checkscan = (SerializableBlob) a[4];
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			byte[] yourBytes = null;
-			ObjectOutput out = null;
-			try {
-				out = new ObjectOutputStream(bos);
-				out.writeObject(checkscan);
-				out.flush();
-				yourBytes = bos.toByteArray();
+			if (checkscan != null) {
 
-			} finally {
-				try {
-					bos.close();
-				} catch (IOException ex) {
-					ex.printStackTrace();
-				}
+				int blobLength = (int) checkscan.length();
+				yourBytes = checkscan.getBytes(1, blobLength);
+
 			}
 			Date expDate = null;
 			if (a[5] != null)
@@ -439,22 +436,10 @@ public class Translator {
 			Integer id = Integer.parseInt(a[0].toString());
 			String name = a[1].toString();
 			SerializableBlob checkscan = (SerializableBlob) a[2];
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			byte[] yourBytes = null;
-			ObjectOutput out = null;
-			try {
-				out = new ObjectOutputStream(bos);
-				out.writeObject(checkscan);
-				out.flush();
-				yourBytes = bos.toByteArray();
 
-			} finally {
-				try {
-					bos.close();
-				} catch (IOException ex) {
-					ex.printStackTrace();
-				}
-			}
+			int blobLength = (int) checkscan.length();
+			byte[] yourBytes = checkscan.getBytes(1, blobLength);
+
 			Integer contractId = Integer.parseInt(a[3].toString());
 
 			ContractDocument doc = new ContractDocument();
@@ -489,22 +474,9 @@ public class Translator {
 			Integer id = Integer.parseInt(a[0].toString());
 			String name = a[1].toString();
 			SerializableBlob checkscan = (SerializableBlob) a[2];
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			byte[] yourBytes = null;
-			ObjectOutput out = null;
-			try {
-				out = new ObjectOutputStream(bos);
-				out.writeObject(checkscan);
-				out.flush();
-				yourBytes = bos.toByteArray();
 
-			} finally {
-				try {
-					bos.close();
-				} catch (IOException ex) {
-					ex.printStackTrace();
-				}
-			}
+			int blobLength = (int) checkscan.length();
+			byte[] yourBytes = checkscan.getBytes(1, blobLength);
 			Integer propertyId = Integer.parseInt(a[3].toString());
 
 			PropertyDocument doc = new PropertyDocument();

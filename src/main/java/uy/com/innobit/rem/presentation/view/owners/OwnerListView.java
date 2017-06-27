@@ -217,7 +217,7 @@ public class OwnerListView extends MVerticalLayout implements View {
 		 * sent to the server when e.g. user holds a tiny pause while typing or
 		 * hits enter.
 		 */
-		filter.setInputPrompt("Filtrar Propitarios");
+		filter.setInputPrompt("Filtrar Propietarios");
 		filter.addTextChangeListener(new FieldEvents.TextChangeListener() {
 			@Override
 			public void textChange(FieldEvents.TextChangeEvent textChangeEvent) {

@@ -1,12 +1,16 @@
 package uy.com.innobit.rem.presentation.view;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStream;
 
 import com.google.common.eventbus.Subscribe;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.FileResource;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.server.VaadinService;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -183,6 +187,14 @@ public final class DashboardMenu extends CustomComponent {
 
 			menuItemsLayout.addComponent(menuItemComponent);
 		}
+		Button manual = new Button("Manual");
+		manual.setPrimaryStyleName("valo-menu-item");
+		manual.setIcon(FontAwesome.FILE_O);
+		menuItemsLayout.addComponent(manual);
+		FileResource fr = new FileResource(
+				new File(VaadinService.getCurrent().getBaseDirectory().getAbsolutePath() + "/ManualSantosDumont.pdf"));
+		FileDownloader fileDownloader = new FileDownloader(fr);
+		fileDownloader.extend(manual);
 		return menuItemsLayout;
 
 	}

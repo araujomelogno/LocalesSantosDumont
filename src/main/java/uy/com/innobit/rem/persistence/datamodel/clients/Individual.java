@@ -27,6 +27,7 @@ public class Individual extends Bean {
 	private String obs;
 	private String socialReason;
 	private String bankAccount;
+	private String bankName;
 
 	public Integer getId() {
 		return id;
@@ -147,5 +148,13 @@ public class Individual extends Bean {
 
 	public void setBankAccount(String bankAccount) {
 		this.bankAccount = bankAccount;
+	}
+
+	public String getBankName() {
+		return bankName;
+	}
+
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
 	}
 }

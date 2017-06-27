@@ -47,6 +47,7 @@ public class OccupantForm extends AbstractForm<Occupant> {
 	TextField name = new MTextField("Nombre:").withFullWidth();
 	TextField surname = new MTextField("Apellido:").withFullWidth();
 	TextField bankAccount = new MTextField("Cuenta Bancaria:").withFullWidth();
+	TextField bankName = new MTextField("Banco:").withFullWidth();
 	TextField doc = new MTextField("Documento:").withFullWidth();
 	TextField rut = new MTextField("Rut:").withFullWidth();
 	TextField socialReason = new MTextField("Razón Social:").withFullWidth();
@@ -69,8 +70,8 @@ public class OccupantForm extends AbstractForm<Occupant> {
 	@Override
 	protected Component createContent() {
 		setStyleName(ValoTheme.LAYOUT_CARD);
-		MFormLayout form = new MFormLayout(name, surname, bankAccount, doc, rut, socialReason, mail, tel, cell, address,
-				obs).withFullWidth();
+		MFormLayout form = new MFormLayout(name, surname, bankAccount, bankName, doc, rut, socialReason, mail, tel,
+				cell, address, obs).withFullWidth();
 		form.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 		Panel panel = new Panel(form);
 		panel.addStyleName(ValoTheme.PANEL_BORDERLESS);
@@ -131,6 +132,9 @@ public class OccupantForm extends AbstractForm<Occupant> {
 	}
 
 	void init() {
+		getSaveButton().setCaption("Guardar");
+		getResetButton().setCaption("Cancelar");
+		getDeleteButton().setCaption("Borrar");
 		setEagerValidation(true);
 		setSavedHandler(new SavedHandler<Occupant>() {
 

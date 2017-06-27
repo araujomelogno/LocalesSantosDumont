@@ -214,7 +214,7 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 					@Override
 					public void buttonClick(ClickEvent event) {
 						if (getEntity().getId() == 0) {
-							propertyForm.saveContract(getEntity());
+							saveContract(getEntity());
 							contractEntries.getContainerDataSource().removeAllItems();
 							for (ContractEntry ce : getEntity().getEntries())
 								contractEntries.getContainerDataSource().addItem(ce);
@@ -235,7 +235,7 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 					@Override
 					public void buttonClick(ClickEvent event) {
 						if (getEntity().getId() == 0) {
-							propertyForm.saveContract(getEntity());
+							saveContract(getEntity());
 							contractEntries.getContainerDataSource().removeAllItems();
 							for (ContractEntry ce : getEntity().getEntries())
 								contractEntries.getContainerDataSource().addItem(ce);
@@ -254,7 +254,7 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 					@Override
 					public void buttonClick(ClickEvent event) {
 						if (getEntity().getId() == 0) {
-							propertyForm.saveContract(getEntity());
+							saveContract(getEntity());
 							contractEntries.getContainerDataSource().removeAllItems();
 							for (ContractEntry ce : getEntity().getEntries())
 								contractEntries.getContainerDataSource().addItem(ce);
@@ -277,7 +277,7 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 					@Override
 					public void buttonClick(ClickEvent event) {
 						if (getEntity().getId() == 0) {
-							propertyForm.saveContract(getEntity());
+							saveContract(getEntity());
 							contractEntries.getContainerDataSource().removeAllItems();
 							for (ContractEntry ce : getEntity().getEntries())
 								contractEntries.getContainerDataSource().addItem(ce);
@@ -1231,7 +1231,7 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 		button.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-
+				setEntity(ContractManager.getInstance().initialize(getEntity()));
 				buildDocumentsWindow();
 				RemUI.getCurrent().addWindow(documentsWindow);
 			}
@@ -1269,10 +1269,32 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 		this.resetButton.addClickListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
-				propertyForm.resetContract(getEntity());
+				resetContract(getEntity());
 				UI.getCurrent().getNavigator().navigateTo(DashboardViewType.PROPERTIES.getViewName());
 			}
 		});
+	}
+
+	public void deleteContract(Contract contract) {
+		if (contract.getId() != 0) {
+			ContractManager.getInstance().deleteContract(contract);
+			getEntity().getProperty().getContracts().remove(contract);
+		}
+	}
+
+	public void saveContract(Contract contract) {
+		if (contract.getId() != 0) {
+			ContractManager.getInstance().updateContract(contract);
+		} else {
+			ContractManager.getInstance().saveContract(contract);
+			getEntity().getProperty().getContracts().add(contract);
+		}
+	}
+
+	public void resetContract(Contract contract) {
+		if (contract.getId() != 0) {
+			getEntity().getProperty().getContracts().add(ContractManager.getInstance().getById(contract.getId()));
+		}
 	}
 
 	protected Button createSaveButton() {
@@ -1286,7 +1308,7 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 		saveButton.addClickListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
-				propertyForm.saveContract(getEntity());
+				saveContract(getEntity());
 				UI.getCurrent().getNavigator().navigateTo(DashboardViewType.PROPERTIES.getViewName());
 			}
 		});
@@ -1310,7 +1332,7 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 		deleteButton.addClickListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
-				propertyForm.deleteContract(getEntity());
+				deleteContract(getEntity());
 				UI.getCurrent().getNavigator().navigateTo(DashboardViewType.PROPERTIES.getViewName());
 			}
 		});
@@ -1326,7 +1348,7 @@ public class ContractEditView extends AbstractForm<Contract>implements View {
 	@Override
 	public void enter(ViewChangeListener.ViewChangeEvent event) {
 		setEntity(VaadinSession.getCurrent().getAttribute(Contract.class));
-		propertyForm = VaadinSession.getCurrent().getAttribute(PropertyForm.class);
+
 		init();
 
 	}

@@ -40,7 +40,7 @@ public class NotificationListView extends MVerticalLayout implements View {
 
 	MHorizontalLayout mainContent = new MHorizontalLayout(notificationsTable).withFullWidth().withMargin(false);
 
-	Header header = new Header("Notificaciones").setHeaderLevel(2);
+	Header header = new Header("Recordatorios").setHeaderLevel(2);
 	Window notificationsWindow;
 	Notification notification;
 

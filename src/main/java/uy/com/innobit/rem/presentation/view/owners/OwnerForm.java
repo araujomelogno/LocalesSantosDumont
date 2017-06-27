@@ -51,6 +51,7 @@ public class OwnerForm extends AbstractForm<Owner> {
 	TextField doc = new MTextField("Documento:").withFullWidth();
 	TextField rut = new MTextField("Rut:").withFullWidth();
 	TextField bankAccount = new MTextField("Cuenta Bancaria:").withFullWidth();
+	TextField bankName = new MTextField("Banco:").withFullWidth();
 	TextField socialReason = new MTextField("Razón Social:").withFullWidth();
 	TextArea address = new MTextArea("Dirección:").withFullWidth();
 	TextField cell = new MTextField("Celular:").withFullWidth();
@@ -71,8 +72,8 @@ public class OwnerForm extends AbstractForm<Owner> {
 	@Override
 	protected Component createContent() {
 		setStyleName(ValoTheme.LAYOUT_CARD);
-		MFormLayout form = new MFormLayout(name, surname, doc, rut,bankAccount, socialReason, mail, tel, cell, address, obs)
-				.withFullWidth();
+		MFormLayout form = new MFormLayout(name, surname, doc, rut, bankAccount,bankName, socialReason, mail, tel, cell, address,
+				obs).withFullWidth();
 		form.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
 		Panel panel = new Panel(form);
 		panel.addStyleName(ValoTheme.PANEL_BORDERLESS);
@@ -114,7 +115,7 @@ public class OwnerForm extends AbstractForm<Owner> {
 		BeanItemContainer<Property> cont = new BeanItemContainer<Property>(Property.class);
 		propertiesTable.setContainerDataSource(cont);
 		propertiesTable.setVisibleColumns("name", "padron", "nro", "address");
-		propertiesTable.setColumnHeaders("Nombre", "Padrón", "Número", "Dirección" );
+		propertiesTable.setColumnHeaders("Nombre", "Padrón", "Número", "Dirección");
 		propertiesTable.addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChange(ValueChangeEvent event) {
@@ -133,6 +134,9 @@ public class OwnerForm extends AbstractForm<Owner> {
 	}
 
 	void init() {
+		getSaveButton().setCaption("Guardar");
+		getResetButton().setCaption("Cancelar");
+		getDeleteButton().setCaption("Borrar");
 		setEagerValidation(true);
 		setSavedHandler(new SavedHandler<Owner>() {
 

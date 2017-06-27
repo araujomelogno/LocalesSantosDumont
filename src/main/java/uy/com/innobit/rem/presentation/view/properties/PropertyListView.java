@@ -42,7 +42,7 @@ public class PropertyListView extends MVerticalLayout implements View {
 
 	TextField filter = new TextField();
 
-	Header header = new Header("Propiedades").setHeaderLevel(2);
+	Header header = new Header("Locales").setHeaderLevel(2);
 
 	Button addButton = new MButton(FontAwesome.EDIT, new Button.ClickListener() {
 		@Override
@@ -135,10 +135,8 @@ public class PropertyListView extends MVerticalLayout implements View {
 	}
 
 	private synchronized void listCustomers(String filterString) {
-
 		if (filterString != null && !filterString.isEmpty()) {
 			filterString = filterString.toLowerCase();
-
 			List<Property> aux = new ArrayList<Property>();
 			for (Property property : properties)
 				if ((property.getName() != null && property.getName().toLowerCase().contains(filterString))

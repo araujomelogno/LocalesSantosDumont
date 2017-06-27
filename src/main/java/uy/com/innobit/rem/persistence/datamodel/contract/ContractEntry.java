@@ -294,6 +294,26 @@ public class ContractEntry extends Bean {
 		return 0d;
 	}
 
+	public Double getNextEntryOwnerCommision() {
+		if (contract != null) {
+			int index = yearIndex + 1;
+			for (ContractEntry ce : contract.getEntries())
+				if (ce.getYearIndex() == index)
+					return ce.getOwnerComission();
+		}
+		return 0d;
+	}
+
+	public Double getNextEntryClientCommision() {
+		if (contract != null) {
+			int index = yearIndex + 1;
+			for (ContractEntry ce : contract.getEntries())
+				if (ce.getYearIndex() == index)
+					return ce.getClientComission();
+		}
+		return 0d;
+	}
+
 	public String getCurrency() {
 		return currency;
 	}

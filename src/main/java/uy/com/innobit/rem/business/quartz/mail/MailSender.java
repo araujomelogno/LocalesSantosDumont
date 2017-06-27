@@ -27,7 +27,7 @@ import uy.com.innobit.rem.persistence.datamodel.mail.MailMessage;
 public class MailSender {
 	private static final String SMTP_HOST_NAME = "smtp.gmail.com";
 	private static final int SMTP_HOST_PORT = 465;
-	private static final String SMTP_AUTH_USER = "awssdum2017@gmail.com";
+	private static final String SMTP_AUTH_USER = "notificaciones@equipos.com.uy";
 	private static final String SMTP_AUTH_PWD = "m4dyt3ls4";
 	private final String MESSAGE_TITTLE = "$$NotificationTittle$$";
 	private final String MESSAGE_MESSAGE = "$$NotificationMessage$$";

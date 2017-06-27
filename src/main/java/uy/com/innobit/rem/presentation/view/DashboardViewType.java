@@ -17,7 +17,7 @@ import uy.com.innobit.rem.presentation.view.setup.users.UserListView;
 
 public enum DashboardViewType {
 	DASHBOARD("dashboard", DashboardView.class, FontAwesome.HOME, true),
-	PROPERTIES("propiedades", PropertyListView.class, FontAwesome.HOME, false),
+	PROPERTIES("locales", PropertyListView.class, FontAwesome.HOME, false),
 	OWNERS("propietarios", OwnerListView.class, FontAwesome.MALE, false),
 	OCCUPANTS("inquilinos", OccupantListView.class, FontAwesome.GROUP, false),
 	MAP("mapa", MapView.class, FontAwesome.GLOBE, false),

@@ -47,7 +47,7 @@ public class Property extends Bean {
 	private String obs;
 	private String tel;
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "property_id")
 	@Fetch(FetchMode.SELECT)
 	private Set<PropertyDocument> documents = new HashSet<PropertyDocument>();
@@ -269,6 +269,12 @@ public class Property extends Bean {
 			if (c.getInit() != null && c.getEnd() != null && !now.before(c.getInit()) && !now.after(c.getEnd()))
 				return c;
 		return null;
+
+	}
+
+	@Override
+	public int hashCode() {
+		return id;
 	}
 
 }

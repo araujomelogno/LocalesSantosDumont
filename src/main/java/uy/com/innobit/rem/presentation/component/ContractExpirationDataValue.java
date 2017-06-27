@@ -1,5 +1,7 @@
 package uy.com.innobit.rem.presentation.component;
 
+import uy.com.innobit.rem.persistence.datamodel.contract.Contract;
+
 public class ContractExpirationDataValue {
 	private String property;
 	private Double m1 = 0d;
@@ -14,7 +16,6 @@ public class ContractExpirationDataValue {
 	private Double m10 = 0d;
 	private Double m11 = 0d;
 	private Double m12 = 0d;
-	
 
 	private Integer d1 = 0;
 	private Integer d2 = 0;
@@ -28,14 +29,12 @@ public class ContractExpirationDataValue {
 	private Integer d10 = 0;
 	private Integer d11 = 0;
 	private Integer d12 = 0;
-	
-
-	
-
 
 	private Double rentalTotal = 0d;
 	private Double ownerComission = 0d;
 	private Double clientComission = 0d;
+
+	private Contract contract;
 
 	public String getProperty() {
 		return property;
@@ -259,5 +258,13 @@ public class ContractExpirationDataValue {
 
 	public void setD12(Integer d12) {
 		this.d12 = d12;
+	}
+
+	public Contract getContract() {
+		return contract;
+	}
+
+	public void setContract(Contract contract) {
+		this.contract = contract;
 	}
 }

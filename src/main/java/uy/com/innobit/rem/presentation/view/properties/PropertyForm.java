@@ -31,6 +31,7 @@ import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.FileDownloader;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.StreamResource.StreamSource;
 import com.vaadin.server.VaadinSession;
@@ -63,11 +64,14 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
+import eu.maxschuster.vaadin.autocompletetextfield.AutocompleteTextField;
 import uy.com.innobit.rem.business.managers.ContractManager;
+import uy.com.innobit.rem.business.managers.OccupantManager;
 import uy.com.innobit.rem.business.managers.OwnerManager;
 import uy.com.innobit.rem.business.managers.PropertyManager;
 import uy.com.innobit.rem.business.quartz.mail.MailSender;
 import uy.com.innobit.rem.business.quartz.whatsapp.WhatsappSender;
+import uy.com.innobit.rem.persistence.datamodel.clients.Occupant;
 import uy.com.innobit.rem.persistence.datamodel.clients.Owner;
 import uy.com.innobit.rem.persistence.datamodel.contract.Contract;
 import uy.com.innobit.rem.persistence.datamodel.property.Property;
@@ -75,6 +79,9 @@ import uy.com.innobit.rem.persistence.datamodel.property.PropertyDocument;
 import uy.com.innobit.rem.persistence.datamodel.property.PropertyNotification;
 import uy.com.innobit.rem.persistence.datamodel.property.PropertyPicture;
 import uy.com.innobit.rem.presentation.RemUI;
+import uy.com.innobit.rem.presentation.component.AutocompleteTextFieldWithButton;
+import uy.com.innobit.rem.presentation.component.TextFieldWithButton;
+import uy.com.innobit.rem.presentation.view.contracts.ContractEditForm;
 import uy.com.innobit.rem.presentation.view.owners.OwnerFilterGenerator;
 import uy.com.innobit.rem.presentation.view.owners.OwnerForm;
 import uy.com.innobit.rem.presentation.view.owners.OwnersFilterDecorator;
@@ -101,6 +108,7 @@ public class PropertyForm extends AbstractForm<Property> {
 	private static final long serialVersionUID = 1L;
 	TextField name = new MTextField("Nombre:").withFullWidth();
 	MButton owner = new MButton("Propietario:");
+	AutocompleteTextFieldWithButton ownerAC;
 	TextArea address = new MTextArea("Dirección:").withFullWidth();
 	MTextField tel = new MTextField("Tel.:").withFullWidth();
 	MTextField nro = new MTextField("Nro.:").withFullWidth();
@@ -146,7 +154,6 @@ public class PropertyForm extends AbstractForm<Property> {
 	public PropertyForm(PropertyListView listView) {
 		this.view = listView;
 		init();
-
 	}
 
 	public Property getEntity() {
@@ -154,8 +161,17 @@ public class PropertyForm extends AbstractForm<Property> {
 	}
 
 	@Override
-	protected Component createContent() {
+	protected void lazyInit() {
+		super.lazyInit();
+		if (getEntity() != null && getEntity().getOwner() != null) {
+			ownerAC.getTextField()
+					.setValue(getEntity().getOwner().getSocialReason() + "-" + getEntity().getOwner().toString());
+		}
 
+	}
+
+	@Override
+	protected Component createContent() {
 		setStyleName(ValoTheme.LAYOUT_CARD);
 		owner.setStyleName(ValoTheme.BUTTON_LINK);
 		owner.addClickListener(new ClickListener() {
@@ -166,6 +182,32 @@ public class PropertyForm extends AbstractForm<Property> {
 
 			}
 		});
+
+		List<Owner> owners = OwnerManager.getInstance().getAll();
+		List<String> aux = new ArrayList<String>();
+		final Map<String, Owner> dictionary = new HashMap<String, Owner>();
+		for (Owner oc : owners) {
+			String key = oc.getSocialReason() + "-" + oc.toString();
+			aux.add(key);
+			dictionary.put(key, oc);
+		}
+		ownerAC = new AutocompleteTextFieldWithButton("Propietario:", FontAwesome.SEARCH, onClick -> {
+			buildOwnerListWindow();
+			RemUI.getCurrent().addWindow(ownerList);
+		} , aux, valueChange -> {
+			Owner oc = dictionary.get(ownerAC.getTextField().getValue());
+			if (oc != null) {
+				getEntity().setOwner(oc);
+			} else {
+				ownerAC.getTextField().setValue("");
+				getEntity().setOwner(null);
+			}
+		});
+		if (getEntity() != null && getEntity().getOwner() != null) {
+			ownerAC.getTextField()
+					.setValue(getEntity().getOwner().getSocialReason() + "-" + getEntity().getOwner().toString());
+		}
+
 		MHorizontalLayout buttons = new MHorizontalLayout();
 
 		buttons.addComponent(contracts);
@@ -212,6 +254,7 @@ public class PropertyForm extends AbstractForm<Property> {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
+				setEntity(PropertyManager.getInstance().initialize(getEntity()));
 				buildDocumentsWindow();
 				RemUI.getCurrent().addWindow(documentsWindow);
 
@@ -252,14 +295,13 @@ public class PropertyForm extends AbstractForm<Property> {
 		expensesFreq.addItem("Semestral");
 		expensesFreq.addItem("Anual");
 
-		MFormLayout form = new MFormLayout(name, owner, nro, padron, block, tel, payExpenses, expenses, expensesFreq,
+		MFormLayout form = new MFormLayout(name, ownerAC, nro, padron, block, tel, payExpenses, expenses, expensesFreq,
 				refUte, refAgua, size, obs, address).withFullWidth();
 
 		form.addStyleName(ValoTheme.FORMLAYOUT_LIGHT);
-		form.setComponentAlignment(owner, Alignment.MIDDLE_LEFT);
 		Panel panel = new Panel(form);
 		panel.addStyleName(ValoTheme.PANEL_BORDERLESS);
-		MVerticalLayout layout = new MVerticalLayout(new Header("Editar Propiedad").setHeaderLevel(4), panel, buttons,
+		MVerticalLayout layout = new MVerticalLayout(new Header("Editar Local").setHeaderLevel(4), panel, buttons,
 				buttons2, getToolbar()).withStyleName(ValoTheme.LAYOUT_CARD);
 		layout.setHeight(view.getHeight(), view.getHeightUnits());
 		setHeight(view.getHeight(), view.getHeightUnits());
@@ -274,6 +316,9 @@ public class PropertyForm extends AbstractForm<Property> {
 	}
 
 	void init() {
+		getSaveButton().setCaption("Guardar");
+		getResetButton().setCaption("Cancelar");
+		getDeleteButton().setCaption("Borrar");
 		setEagerValidation(true);
 		setSavedHandler(new SavedHandler<Property>() {
 
@@ -314,6 +359,10 @@ public class PropertyForm extends AbstractForm<Property> {
 		getSaveButton().setCaption("Guardar");
 		getResetButton().setCaption("Cancelar");
 		getDeleteButton().setCaption("Borrar");
+		if (getEntity() != null && getEntity().getOwner() != null) {
+			ownerAC.getTextField()
+					.setValue(getEntity().getOwner().getSocialReason() + "-" + getEntity().getOwner().toString());
+		}
 
 	}
 
@@ -343,39 +392,13 @@ public class PropertyForm extends AbstractForm<Property> {
 				Contract contract = new Contract();
 				contract.setProperty(getEntity());
 				ContractManager.getInstance().saveContract(contract);
-				VaadinSession.getCurrent().setAttribute(Contract.class, contract);
-				VaadinSession.getCurrent().setAttribute(PropertyForm.class, PropertyForm.this);
-				UI.getCurrent().getNavigator().navigateTo("/contractEdit");
+				ContractEditForm w = new ContractEditForm(contract);
+				w.openInModalPopup();
 			}
 		});
 		MVerticalLayout layout = new MVerticalLayout(add, buildContacts()).withFullWidth();
 		contractsWindow.setContent(layout);
 
-	}
-
-	public void deleteContract(Contract contract) {
-		if (contract.getId() != 0) {
-			ContractManager.getInstance().deleteContract(contract);
-			getEntity().getContracts().remove(contract);
-		}
-	}
-
-	public void saveContract(Contract contract) {
-		if (contract.getId() != 0) {
-			ContractManager.getInstance().updateContract(contract);
-		} else {
-			ContractManager.getInstance().saveContract(contract);
-			getEntity().getContracts().add(contract);
-		}
-	}
-
-	public void resetContract(Contract contract) {
-		if (contract.getId() != 0) {
-			getEntity().getContracts().add(ContractManager.getInstance().getById(contract.getId()));// es
-																									// un
-																									// set...se
-																									// sustituyen
-		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -400,8 +423,9 @@ public class PropertyForm extends AbstractForm<Property> {
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				getEntity().setOwner((Owner) event.getItemId());
-				owner.setCaption("Propietario: " + getEntity().getOwner().getName());
 				ownerList.close();
+				ownerAC.getTextField()
+						.setValue(getEntity().getOwner().getSocialReason() + "-" + getEntity().getOwner().toString());
 				getFieldGroup().setBeanModified(true);
 				adjustSaveButtonState();
 
@@ -461,9 +485,17 @@ public class PropertyForm extends AbstractForm<Property> {
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				Contract contract = (Contract) event.getItemId();
-				VaadinSession.getCurrent().setAttribute(Contract.class, contract);
-				VaadinSession.getCurrent().setAttribute(PropertyForm.class, PropertyForm.this);
-				UI.getCurrent().getNavigator().navigateTo("/contractEdit");
+				ContractEditForm w = new ContractEditForm(contract);
+				Window window = new Window();
+				window.setDraggable(false);
+				window.setModal(true);
+				window.setResizable(false);
+				window.setCaption("Contrato");
+				window.setWidth("95%");
+				window.setHeight("95%");
+				window.setStyleName("mipa");
+				window.setContent(w);
+				UI.getCurrent().addWindow(window);
 			}
 		});
 		for (Contract o : getEntity().getContracts()) {

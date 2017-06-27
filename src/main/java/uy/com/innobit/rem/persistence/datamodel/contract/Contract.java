@@ -49,7 +49,7 @@ public class Contract extends Bean {
 	@Fetch(FetchMode.SELECT)
 	private Set<ContractEntry> entries = new HashSet<ContractEntry>();
 
-	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "contract_id")
 	@Fetch(FetchMode.SELECT)
 	private Set<ContractDocument> documents = new HashSet<ContractDocument>();
@@ -211,7 +211,7 @@ public class Contract extends Bean {
 
 	public String getOwnerName() {
 		if (property != null && property.getOwner() != null)
-			return property.getOwner().getName();
+			return property.getOwner().getSocialReason() + "-" + property.getOwner().getName();
 		return "";
 	}
 

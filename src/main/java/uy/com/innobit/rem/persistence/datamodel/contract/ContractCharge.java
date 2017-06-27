@@ -23,7 +23,7 @@ import uy.com.innobit.rem.persistence.datamodel.Bean;
 public class ContractCharge extends Bean {
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	 @GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id = 0;
 
 	private Date paymentDate;
@@ -52,6 +52,10 @@ public class ContractCharge extends Bean {
 	@Fetch(FetchMode.SELECT)
 	@JoinColumn(name = "contract_entry_id", nullable = true)
 	private ContractEntry entry;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "contract_expiration_id", nullable = true)
+	private ContractExpiration expiration;
 
 	public ContractCharge() {
 
@@ -228,6 +232,14 @@ public class ContractCharge extends Bean {
 
 	public void setObs(String obs) {
 		this.obs = obs;
+	}
+
+	public ContractExpiration getExpiration() {
+		return expiration;
+	}
+
+	public void setExpiration(ContractExpiration expiration) {
+		this.expiration = expiration;
 	}
 
 }

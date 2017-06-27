@@ -1,14 +1,18 @@
 package uy.com.innobit.rem.business.managers;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
+import org.hibernate.Criteria;
+import org.hibernate.Hibernate;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
 import com.vaadin.server.VaadinService;
 
-import uy.com.innobit.rem.persistence.datamodel.clients.Occupant;
+ import uy.com.innobit.rem.persistence.datamodel.clients.Occupant;
 import uy.com.innobit.rem.persistence.datamodel.clients.Owner;
 import uy.com.innobit.rem.persistence.datamodel.contract.Contract;
 import uy.com.innobit.rem.persistence.datamodel.property.Property;
@@ -112,6 +116,22 @@ public class PropertyManager {
 			if (!result.contains(c.getProperty()))
 				result.add(c.getProperty());
 		return result;
+	}
+
+	public synchronized Property initialize(Property property) {
+		final Criteria criteria = DBEntityManagerFactory.get(Property.class).getSessionManager().getSession()
+				.createCriteria(Property.class);
+		criteria.add(Restrictions.eq("id", property.getId()));
+		criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+		List<Property> list = new ArrayList<Property>(new HashSet(criteria.list()));
+		Property p = list.get(0);
+		Hibernate.initialize(p.getDocuments());
+
+		// Commit session changes.
+		if (DBEntityManagerFactory.get(Property.class).getSessionManager().getSession().getTransaction().isActive()) {
+			DBEntityManagerFactory.get(Property.class).getSessionManager().getSession().getTransaction().commit();
+		}
+		return p;
 	}
 
 }

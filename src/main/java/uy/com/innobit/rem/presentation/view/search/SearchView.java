@@ -153,16 +153,18 @@ public class SearchView extends MVerticalLayout implements View {
 
 	private synchronized List<Owner> listCustomers(List<Owner> owners, String filterString) {
 		if (filterString != null && !filterString.isEmpty()) {
+			filterString = filterString.toLowerCase();
 			List<Owner> aux = new ArrayList<Owner>();
 			for (Owner owner : owners)
-				if ((owner.getName() != null && owner.getName().contains(filterString))
-						|| (owner.getSurname() != null && owner.getSurname().contains(filterString))
-						|| (owner.getDoc() != null && owner.getDoc().contains(filterString))
-						|| (owner.getSocialReason() != null && owner.getSocialReason().contains(filterString))
-						|| (owner.getTel() != null && owner.getTel().contains(filterString))
-						|| (owner.getRut() != null && owner.getRut().contains(filterString))
-						|| (owner.getMail() != null && owner.getMail().contains(filterString))
-						|| (owner.getCell() != null && owner.getCell().contains(filterString)))
+				if ((owner.getName() != null && owner.getName().toLowerCase().contains(filterString))
+						|| (owner.getSurname() != null && owner.getSurname().toLowerCase().contains(filterString))
+						|| (owner.getDoc() != null && owner.getDoc().toLowerCase().contains(filterString))
+						|| (owner.getSocialReason() != null
+								&& owner.getSocialReason().toLowerCase().contains(filterString))
+						|| (owner.getTel() != null && owner.getTel().toLowerCase().contains(filterString))
+						|| (owner.getRut() != null && owner.getRut().toLowerCase().contains(filterString))
+						|| (owner.getMail() != null && owner.getMail().toLowerCase().contains(filterString))
+						|| (owner.getCell() != null && owner.getCell().toLowerCase().contains(filterString)))
 					aux.add(owner);
 			return aux;
 		}
@@ -172,14 +174,16 @@ public class SearchView extends MVerticalLayout implements View {
 
 	private synchronized List<Property> listProperty(List<Property> properties, String filterString) {
 		if (filterString != null && !filterString.isEmpty()) {
+			filterString = filterString.toLowerCase();
 			List<Property> aux = new ArrayList<Property>();
 			for (Property property : properties)
-				if ((property.getName() != null && property.getName().contains(filterString))
-						|| (property.getNro() != null && property.getNro().contains(filterString))
-						|| (property.getPadron() != null && property.getPadron().contains(filterString))
-						|| (property.getBlock() != null && property.getBlock().contains(filterString))
-						|| (property.getTel() != null && property.getTel().contains(filterString))
-						|| (property.getAddress() != null && property.getAddress().contains(filterString)))
+				if ((property.getName() != null && property.getName().toLowerCase().contains(filterString))
+						|| (property.getNro() != null && property.getNro().toLowerCase().contains(filterString))
+						|| (property.getPadron() != null && property.getPadron().toLowerCase().contains(filterString))
+						|| (property.getBlock() != null && property.getBlock().toLowerCase().contains(filterString))
+						|| (property.getTel() != null && property.getTel().toLowerCase().contains(filterString))
+						|| (property.getAddress() != null
+								&& property.getAddress().toLowerCase().contains(filterString)))
 					aux.add(property);
 			return aux;
 		}
@@ -189,17 +193,18 @@ public class SearchView extends MVerticalLayout implements View {
 
 	private List<Occupant> listOccupants(List<Occupant> occupants, String filterString) {
 		if (filterString != null && !filterString.isEmpty()) {
+			filterString = filterString.toLowerCase();
 			List<Occupant> aux = new ArrayList<Occupant>();
-
 			for (Occupant occupant : occupants)
-				if ((occupant.getName() != null && occupant.getName().contains(filterString))
-						|| (occupant.getSurname() != null && occupant.getSurname().contains(filterString))
-						|| (occupant.getDoc() != null && occupant.getDoc().contains(filterString))
-						|| (occupant.getSocialReason() != null && occupant.getSocialReason().contains(filterString))
-						|| (occupant.getTel() != null && occupant.getTel().contains(filterString))
-						|| (occupant.getRut() != null && occupant.getRut().contains(filterString))
-						|| (occupant.getMail() != null && occupant.getMail().contains(filterString))
-						|| (occupant.getCell() != null && occupant.getCell().contains(filterString)))
+				if ((occupant.getName() != null && occupant.getName().toLowerCase().contains(filterString))
+						|| (occupant.getSurname() != null && occupant.getSurname().toLowerCase().contains(filterString))
+						|| (occupant.getDoc() != null && occupant.getDoc().toLowerCase().contains(filterString))
+						|| (occupant.getSocialReason() != null
+								&& occupant.getSocialReason().toLowerCase().contains(filterString))
+						|| (occupant.getTel() != null && occupant.getTel().toLowerCase().contains(filterString))
+						|| (occupant.getRut() != null && occupant.getRut().toLowerCase().contains(filterString))
+						|| (occupant.getMail() != null && occupant.getMail().toLowerCase().contains(filterString))
+						|| (occupant.getCell() != null && occupant.getCell().toLowerCase().contains(filterString)))
 					aux.add(occupant);
 			return aux;
 		}
